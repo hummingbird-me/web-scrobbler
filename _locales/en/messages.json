@@ -1,0 +1,32 @@
+{
+    "appName": {
+        "message": "Kitsu Web Scrobbler"
+    },
+    "appDesc": {
+        "message": "Automatically tracks your episode progress on Kitsu when you stream anime from your browser."
+    },
+    "settings": {
+        "message": "Settings"
+    },
+    "loginTitle": {
+        "message": "Login to Kitsu"
+    },
+    "login": {
+        "message": "Login"
+    },
+    "email": {
+        "message": "E-Mail"
+    },
+    "password": {
+        "message": "Password"
+    },
+    "connected": {
+        "message": "You are now connected to Kitsu !"
+    },
+    "loginError": {
+        "message": "Bad login"
+    },
+    "animeProgress": {
+        "message": "Progress"
+    }
+}

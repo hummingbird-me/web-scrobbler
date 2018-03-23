@@ -1,0 +1,52 @@
+{
+    "manifest_version": 2,
+    "name": "__MSG_appName__",
+    "description": "__MSG_appDesc__",
+    "author": "Kitsu.io",
+    "version": "0.1",
+    "permissions": [
+        "*://www.crunchyroll.com/*",
+        "*://www.wakanim.tv/*",
+        "*://animedigitalnetwork.fr/*",
+        "*://www.hulu.com/*",
+        "*://www.netflix.com/*",
+        "storage",
+        "notifications"
+    ],
+    "options_ui": {
+        "page" : "pages/options.html"
+    },
+    "background": {
+        "scripts": ["jquery.js", "global.js", "runtime.js"]
+    },
+    "default_locale": "en",
+    "browser_action": {
+        "default_icon": "img/logo230.png",
+        "default_popup": "pages/popup.html"
+    },
+    "content_scripts": [
+        {
+            "matches": ["*://www.crunchyroll.com/*"],
+            "js": ["jquery.js", "global.js", "websites/crunchyroll.js"]
+        },
+        {
+            "matches": ["*://www.wakanim.tv/*"],
+            "js": ["jquery.js", "global.js", "websites/wakanim.js"]
+        },
+        {
+            "matches": ["*://animedigitalnetwork.fr/*"],
+            "js": ["jquery.js", "global.js", "websites/adn.js"]
+        },
+        {
+            "matches": ["*://www.hulu.com/*"],
+            "js": ["jquery.js", "global.js", "websites/hulu.js"]
+        },
+        {
+            "matches": ["*://www.netflix.com/*"],
+            "js": ["jquery.js", "global.js", "websites/netflix.js"]
+        }
+    ],
+    "icons": {
+        "230": "img/logo230.png"
+    }
+}
