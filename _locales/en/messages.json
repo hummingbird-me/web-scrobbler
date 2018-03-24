@@ -28,5 +28,11 @@
     },
     "animeProgress": {
         "message": "Progress"
+    },
+    "timeNull": {
+        "message": "Episode length is not available in Kitsu database, click \"Scrobble now\" manually."
+    },
+    "scrobbled": {
+        "message": "Episode was added to your animelist"
     }
 }

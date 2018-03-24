@@ -1,0 +1,26 @@
+{
+  "name": "web-scrobbler",
+  "version": "0.0.1",
+  "description": "Automatically tracks your episode progress on Kitsu when you stream anime from your browser.",
+  "main": "none",
+  "scripts": {
+    "test": "return true;"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hummingbird-me/web-scrobbler.git"
+  },
+  "keywords": [
+    "kitsu",
+    "chrome-extension"
+  ],
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/hummingbird-me/web-scrobbler/issues"
+  },
+  "homepage": "https://github.com/hummingbird-me/web-scrobbler#readme",
+  "dependencies": {
+    "semantic-ui-progress": "^2.3.1"
+  }
+}

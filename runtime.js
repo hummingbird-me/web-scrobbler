@@ -18,6 +18,7 @@ Main runtime
 */
 var scrobbling = {error: null};
 var error;
+var mainTimer;
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.action == 'initScrobble') {
@@ -39,13 +40,25 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                 } else if (jsondata.data.length == 1) {
                     getAnimeProgress(jsondata.data[0].id).then(function(animeProgress) {
                         console.log('hey there !');
-                        scrobbling = {error: 'none', animeData: jsondata.data[0], progress: animeProgress};
+                        scrobbling = {error: 'none', animeData: jsondata.data[0], progress: animeProgress, episode: message.episode_number, origin: sender.tab.id};
+                        if (jsondata.data[0].attributes.episodeLength == null) {
+                            scrobbling.notice = chrome.i18n.getMessage('timeNull');
+                        } else {
+                            mainTimer = new Timer(scrobbleAnime, jsondata.data[0].attributes.episodeLength / 4 * 3 * 60 * 1000, jsondata.data[0].id, message.episode_number);
+                            window.setTimeout(checkLoop, 2500, sender.tab.id);
+                        }
                     });
                 } else {
-                    // to do
+                    // TODO : promptAnime ?
                     getAnimeProgress(jsondata.data[0].id).then(function(animeProgress) {
                         console.log('hey there bis !');
-                        scrobbling = {error: 'none', animeData: jsondata.data[0], progress: animeProgress};
+                        scrobbling = {error: 'none', animeData: jsondata.data[0], progress: animeProgress, episode: message.episode_number, origin: sender.tab.id};
+                        if (jsondata.data[0].attributes.episodeLength == null) {
+                            scrobbling.notice = chrome.i18n.getMessage('timeNull');
+                        } else {
+                            mainTimer = new Timer(scrobbleAnime, jsondata.data[0].attributes.episodeLength / 4 * 3 * 60 * 1000, jsondata.data[0].id, message.episode_number);
+                            window.setTimeout(checkLoop, 2500, sender.tab.id);
+                        }                    
                     });
                 }
             });
@@ -54,5 +67,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         });
     } else if (message.action == 'getScrobbling') {
         sendResponse(scrobbling);
+    } else if (message.action == 'scrobbleNow') {
+        scrobbleAnime(scrobbling.animeData.id, scrobbling.episode);
+        sendResponse(true);
+    } else {
+        console.error('Unknown runtime message', message);
+        sendResponse(false);
     }
 });

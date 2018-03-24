@@ -34,10 +34,20 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, function (scrobbling) {
         $('#animecover').attr('src', scrobbling.animeData.attributes.coverImage.tiny);
         $('#title').text(scrobbling.animeData.attributes.canonicalTitle);
         $('#synopsis').text(scrobbling.animeData.attributes.synopsis);
+        $('#notice').text(scrobbling.notice);
         $('.progress').progress({
             total: scrobbling.animeData.attributes.episodeCount
         });
         $('.progress').progress('set progress', scrobbling.progress);
         $('.label').append(scrobbling.progress + '/' + scrobbling.animeData.attributes.episodeCount);
+        $('#scrobblenow').click(function() {
+            chrome.runtime.sendMessage({action: 'scrobbleNow'}, function(response) {
+                console.log('scrobbled');
+                $('#notice').text(chrome.i18n.getMessage('scrobbled'));
+                $('#scrobblenow').remove();
+            });
+        });
+    } else if (scrobbling.error == null) {
+        $('#content').empty();
     }
 });

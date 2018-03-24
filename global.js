@@ -74,6 +74,115 @@ function getAnimeProgress(animeId) {
     });
 }
 
+function scrobbleAnime(animeId, episode) {
+    getCredentials().then(function (userdata) {
+        var url = 'https://kitsu.io/api/edge/library-entries?filter[animeId]=' + encodeURIComponent(animeId) + '&filter[userId]=' + encodeURIComponent(userdata.uid),
+            options = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/vnd.api+json',
+                    'Accept': 'application/vnd.api+json',
+                    'Authorization': 'Bearer ' + userdata.atoken,
+                }
+            }
+
+        fetch(url, options).then(function(response) {
+            response.json().then(function(json) {
+                if (json.data.length == 0) {
+                    url2 = 'https://kitsu.io/api/edge/library-entries';
+                    options.method = 'POST',
+                    options.body = JSON.stringify({
+                        type: 'libraryEntries',
+                        attributes: {
+                            status: 'current',
+                            progress: episode
+                        },
+                        relationships: {
+                            anime: {
+                                data: {
+                                    type: 'anime',
+                                    id: animeId
+                                },
+                            },
+                            user: {
+                                data: {
+                                    type: 'users',
+                                    id: userdata.uid
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    url2 = 'https://kitsu.io/api/edge/library-entries/' + json.data[0].id;
+                    options.method = 'PATCH';
+                    options.body = JSON.stringify({
+                        data: {
+                            id: json.data[0].id,
+                            type: 'libraryEntries',
+                            attributes: {
+                                status: 'current',
+                                progress: episode
+                            }
+                        }
+                    });
+                }
+                fetch(url2, options).catch(function(error) {
+                    console.error(error);
+                });
+            })
+        }).catch(function(error) {
+            console.error(error);
+        });
+    });
+}
+
+function checkLoop(tabId) {
+    try {
+        chrome.tabs.get(tabId, function(tab) {
+            if (!tab.audible) {
+                mainTimer.pause();
+                window.setTimeout(checkLoop, 2500, tabId);
+            } else {
+                if (mainTimer.isPaused()) {
+                    mainTimer.resume();
+                }
+                window.setTimeout(checkLoop, 2500, tabId);
+            }
+        });
+    } catch (error) {
+        mainTimer.pause();
+        mainTimer = undefined;
+    }
+}
+
+/* Timer class */
+function Timer(callback, delay, ...params) {
+    var timerId, start, remaining = delay, paused;
+
+    this.pause = function() {
+        window.clearTimeout(timerId);
+        remaining -= new Date() - start;
+        paused = true;
+    };
+
+    this.resume = function() {
+        start = new Date();
+        window.clearTimeout(timerId);
+        timerId = window.setTimeout(callback, remaining, ...params);
+        paused = false;
+    };
+
+    this.isPaused = function() { return paused; };
+
+    this.getRemaining = function() { return remaining; };
+
+    this.setRemaining = function(time) { remaining = time; };
+
+    this.resume();
+}
+
+
+
 function initScrobble(series_title, episode_number, prepend_message) {
     console.log({
         'series_tiltle': series_title,
