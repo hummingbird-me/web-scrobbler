@@ -29,6 +29,9 @@ for (var j = 0; j < objects.length; j++) {
     }
 }
 
+$('#settings').click(function() {
+    chrome.runtime.openOptionsPage();
+});
 chrome.runtime.sendMessage({action: 'getScrobbling'}, function (scrobbling) {
     if (scrobbling.error == 'none') {
         $('#animecover').attr('src', scrobbling.animeData.attributes.coverImage.tiny);
@@ -49,5 +52,13 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, function (scrobbling) {
         });
     } else if (scrobbling.error == null) {
         $('#content').empty();
+        $('#content').text(chrome.i18n.getMessage('nothing'));
+    } else if (scrobbling.error == 'notfound') {
+        $('#content').empty();
+        $('#content').text(chrome.i18n.getMessage('noresults'));
+    } else if (scrobbling.error == 'noacc') {
+        $('#animecover, .progress, #scrobblenow').remove();
+        $('#title').text(chrome.i18n.getMessage('welcomePopupTitle'));
+        $('#synopsis').text(chrome.i18n.getMessage('welcomePopupMessage'));
     }
 });

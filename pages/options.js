@@ -45,7 +45,7 @@ function submitLogin() {
     function handleResponse(data) {
         data.json().then(function (data) {
             if (data.error) {
-                alert(chrome.i18n.getMessage('loginError'));
+                $('#notice').text(chrome.i18n.getMessage('loginError'));
             } else {
                 var url = 'https://kitsu.io/api/edge/users?filter[self]=true',
                     options = {
@@ -60,7 +60,8 @@ function submitLogin() {
                 fetch(url, options).then(function (data2) {
                     data2.json().then(function (data2) {
                         chrome.storage.local.set({'atoken': data.access_token, 'uid': data2.data[0].id}, function() {
-                            alert(chrome.i18n.getMessage('connected'));
+                            $('#notice').text(chrome.i18n.getMessage('connected'));
+                            chrome.runtime.reload();
                         });
                     });
                 });
@@ -71,4 +72,4 @@ function submitLogin() {
     fetch(url, options).then(handleResponse);
 }
 
-$('#loginbtn').click(submitLogin);
+$('#submitbtn').click(submitLogin);

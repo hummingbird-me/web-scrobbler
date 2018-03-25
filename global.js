@@ -43,9 +43,13 @@ function retrieveWindowVariables(variables) {
 }
 
 function getCredentials() {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
         chrome.storage.local.get(['atoken', 'uid'], function (items) {
-            resolve(items);
+            if (!items.atoken) {
+                reject(false);
+            } else {
+                resolve(items);
+            }
         });
     });
 }
@@ -65,7 +69,11 @@ function getAnimeProgress(animeId) {
 
             fetch(url, options).then(function(response) {
                 response.json().then(function(json) {
-                    resolve(json.data[0].attributes.progress);
+                    if (json.data.length == 0) {
+                        resolve(0);
+                    } else {
+                        resolve(json.data[0].attributes.progress);
+                    }
                 });
             }).catch(function(reason) {
                 resolve(false);
@@ -126,7 +134,10 @@ function scrobbleAnime(animeId, episode) {
                         }
                     });
                 }
-                fetch(url2, options).catch(function(error) {
+                fetch(url2, options).then(function (response) {
+                    chrome.browserAction.setBadgeText({text: '+'});
+                    chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
+                }).catch(function(error) {
                     console.error(error);
                 });
             })

@@ -34,5 +34,23 @@
     },
     "scrobbled": {
         "message": "Episode was added to your animelist"
+    },
+    "welcomeNotificationTitle": {
+        "message": "Welcome on Kitsu Scrobbler !"
+    },
+    "welcomeNotificationMessage": {
+        "message": "Click on me or go in settings to login to your Kitsu account !"
+    },
+    "welcomePopupTitle": {
+        "message": "Welcome on Kitsu Scrobbler !"
+    },
+    "welcomePopupMessage": {
+        "message": "Go in settings to login to your Kitsu account !"
+    },
+    "nothing": {
+        "message": "Nothing is currently detected by Kitsu Web Scrobbler, if you believe that is an error please report the issue on Kitsu feedback."
+    },
+    "noresults": {
+        "message": "Anime you are watching cannot be found on Kitsu. You must add it by yourself."
     }
 }

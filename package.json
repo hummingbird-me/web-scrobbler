@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/hummingbird-me/web-scrobbler#readme",
   "dependencies": {
+    "jquery": "^3.2.1",
     "semantic-ui-progress": "^2.3.1"
   }
 }
