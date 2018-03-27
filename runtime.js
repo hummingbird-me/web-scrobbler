@@ -16,9 +16,12 @@ Main runtime
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
-var scrobbling = {error: null};
+var scrobbling = {error: null, origin: null};
 var error;
 var mainTimer;
+// Reset runtime
+chrome.browserAction.setBadgeText({text: ''});
+chrome.browserAction.setBadgeBackgroundColor({color: '#a86d00'});
 getCredentials().catch(function(reason) {
     chrome.notifications.create('kitsuLogin', {
         type: 'basic',
@@ -35,6 +38,34 @@ getCredentials().catch(function(reason) {
     scrobbling = {error: 'noacc'};
 });
 
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+    if (scrobbling.origin == tabId && typeof mainTimer == 'object') {
+        if (typeof changeInfo.url == 'string') {
+            console.log({tabId: tabId, timer: mainTimer, event: 'tab changed url'});
+            mainTimer.pause();
+            mainTimer = undefined;
+            chrome.browserAction.setBadgeText({text: ''});
+        } else if (typeof changeInfo.audible == 'boolean' && changeInfo.audible) {
+            console.log({tabId: tabId, timer: mainTimer, event: 'audible', remaining: mainTimer.getRemaining()});
+            if (mainTimer.isPaused()) {
+                mainTimer.resume();
+            }
+        } else if (typeof changeInfo.audible == 'boolean' && !changeInfo.audible) {
+            console.log({tabId: tabId, timer: mainTimer, event: 'not audible'});
+            if (!mainTimer.isPaused()) {
+                mainTimer.pause();
+            }
+        }
+    }
+});
+chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+    if (scrobbling.origin == tabId && typeof mainTimer == 'object') {
+        console.log({tabId: tabId, timer: mainTimer, event: 'tab closed'});
+        mainTimer.pause();
+        mainTimer = undefined;
+        chrome.browserAction.setBadgeText({text: ''});
+    }
+});
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.action == 'initScrobble') {
         console.log('initScrobble');
@@ -65,8 +96,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                         } else {
                             chrome.browserAction.setBadgeText({text: 'OK'});
                             chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
-                            mainTimer = new Timer(scrobbleAnime, jsondata.data[0].attributes.episodeLength / 4 * 3 * 60 * 1000, jsondata.data[0].id, message.episode_number);
-                            window.setTimeout(checkLoop, 2500, sender.tab.id);
+                            mainTimer = new Timer(scrobbleAnime, parseInt(jsondata.data[0].attributes.episodeLength * 0.75 * 60 * 1000), jsondata.data[0].id, message.episode_number);
                         }
                     });
                 } else {
@@ -81,8 +111,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                         } else {
                             chrome.browserAction.setBadgeText({text: 'OK'});
                             chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
-                            mainTimer = new Timer(scrobbleAnime, jsondata.data[0].attributes.episodeLength / 4 * 3 * 60 * 1000, jsondata.data[0].id, message.episode_number);
-                            window.setTimeout(checkLoop, 2500, sender.tab.id);
+                            mainTimer = new Timer(scrobbleAnime, parseInt(jsondata.data[0].attributes.episodeLength * 0.75 * 60 * 1000), jsondata.data[0].id, message.episode_number);
                         }                    
                     });
                 }

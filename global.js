@@ -84,6 +84,7 @@ function getAnimeProgress(animeId) {
 
 function scrobbleAnime(animeId, episode) {
     getCredentials().then(function (userdata) {
+        console.log({animeId: animeId, episode: episode, event: 'scrobbling !'});
         var url = 'https://kitsu.io/api/edge/library-entries?filter[animeId]=' + encodeURIComponent(animeId) + '&filter[userId]=' + encodeURIComponent(userdata.uid),
             options = {
                 method: 'GET',
@@ -123,13 +124,23 @@ function scrobbleAnime(animeId, episode) {
                 } else {
                     url2 = 'https://kitsu.io/api/edge/library-entries/' + json.data[0].id;
                     options.method = 'PATCH';
+                    if (json.data[0].attributes.status == 'completed') {
+                        rewatch = true;
+                        rewatchCount = json.data[0].attributes.reconsumeCount + 1;
+                        console.log('Will mark as a rewatch');
+                    } else {
+                        rewatch = json.data[0].attributes.reconsuming;
+                        rewatchCount = json.data[0].attributes.reconsumeCount;
+                    }
                     options.body = JSON.stringify({
                         data: {
                             id: json.data[0].id,
                             type: 'libraryEntries',
                             attributes: {
                                 status: 'current',
-                                progress: episode
+                                progress: episode,
+                                reconsuming: rewatch,
+                                reconsumeCount: rewatchCount
                             }
                         }
                     });
@@ -137,6 +148,7 @@ function scrobbleAnime(animeId, episode) {
                 fetch(url2, options).then(function (response) {
                     chrome.browserAction.setBadgeText({text: '+'});
                     chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
+                    clearInterval(mainLoop);
                 }).catch(function(error) {
                     console.error(error);
                 });
@@ -147,28 +159,10 @@ function scrobbleAnime(animeId, episode) {
     });
 }
 
-function checkLoop(tabId) {
-    try {
-        chrome.tabs.get(tabId, function(tab) {
-            if (!tab.audible) {
-                mainTimer.pause();
-                window.setTimeout(checkLoop, 2500, tabId);
-            } else {
-                if (mainTimer.isPaused()) {
-                    mainTimer.resume();
-                }
-                window.setTimeout(checkLoop, 2500, tabId);
-            }
-        });
-    } catch (error) {
-        mainTimer.pause();
-        mainTimer = undefined;
-    }
-}
-
 /* Timer class */
 function Timer(callback, delay, ...params) {
-    var timerId, start, remaining = delay, paused;
+    var timerId, start, paused;
+    var remaining = delay;
 
     this.pause = function() {
         window.clearTimeout(timerId);
@@ -192,14 +186,6 @@ function Timer(callback, delay, ...params) {
     this.resume();
 }
 
-
-
 function initScrobble(series_title, episode_number, prepend_message) {
-    console.log({
-        'series_tiltle': series_title,
-        'epnumber': episode_number,
-        'prepend_message': prepend_message,
-        'action': 'initScrobble'
-    });
     chrome.runtime.sendMessage({action: 'initScrobble', series_title: series_title, episode_number: episode_number, prepend_message: prepend_message});
 }

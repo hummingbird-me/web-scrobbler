@@ -34,7 +34,9 @@ $('#settings').click(function() {
 });
 chrome.runtime.sendMessage({action: 'getScrobbling'}, function (scrobbling) {
     if (scrobbling.error == 'none') {
-        $('#animecover').attr('src', scrobbling.animeData.attributes.coverImage.tiny);
+        if (scrobbling.animeData.attributes.coverImage) {
+            $('#animecover').attr('src', scrobbling.animeData.attributes.coverImage.tiny);
+        }
         $('#title').text(scrobbling.animeData.attributes.canonicalTitle);
         $('#synopsis').text(scrobbling.animeData.attributes.synopsis);
         $('#notice').text(scrobbling.notice);
