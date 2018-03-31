@@ -29,6 +29,7 @@ for (var j = 0; j < objects.length; j++) {
     }
 }
 
+$('#unsure').hide();
 $('#settings').click(function() {
     chrome.runtime.openOptionsPage();
 });
@@ -51,6 +52,12 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, function (scrobbling) {
                 $('#notice').text(chrome.i18n.getMessage('scrobbled'));
                 $('#scrobblenow').remove();
             });
+        });
+        if (typeof scrobbling.chooseData == 'object') {
+            $('#unsure').show();
+        }
+        scrobbling.discussdata.forEach(element => {
+            $('#comments').append('<div class="ui segment"><strong>' + element.user.attributes.name + '</strong><br/>' + element.post.attributes.contentFormatted + '<em>' + element.post.attributes.createdAt + '</em></div>');
         });
     } else if (scrobbling.error == null) {
         $('#content').empty();

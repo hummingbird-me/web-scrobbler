@@ -27,7 +27,7 @@ function main() {
     var regex2 = /\((Season|Saison) ([0-9])\)/;
     var regex3 = /(Season|Saison) ([0-9])/;
 
-    if (regex.test(document.documentURI)) {
+    if (regex.test(document.documentURI) && document.documentURI != 'http://www.crunchyroll.com/videos/anime') {
         var episodeId = null;
         episodeId = retrieveWindowVariables(['DYNAMIC.MEDIA_ID']);
         episodeId = episodeId['DYNAMIC.MEDIA_ID'];

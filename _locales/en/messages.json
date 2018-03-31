@@ -52,5 +52,17 @@
     },
     "noresults": {
         "message": "Anime you are watching cannot be found on Kitsu. You must add it by yourself."
+    },
+    "unsure": {
+        "message": "Not the good one ?"
+    },
+    "unsure_message": {
+        "message": "Please choose the good one in the list, if it's not here, check on Kitsu.io and submit a DB Request."
+    },
+    "scrobbleNow": {
+        "message": "Scrobble now"
+    },
+    "communityPosts": {
+        "message": "Community posts"
     }
 }

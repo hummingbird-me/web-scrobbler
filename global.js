@@ -42,6 +42,18 @@ function retrieveWindowVariables(variables) {
     return ret;
 }
 
+if (!String.prototype.format) {
+    String.prototype.format = function() {
+      var args = arguments;
+      return this.replace(/{(\d+)}/g, function(match, number) { 
+        return typeof args[number] != 'undefined'
+          ? args[number]
+          : match
+        ;
+      });
+    };
+  }
+
 function getCredentials() {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['atoken', 'uid'], function (items) {
@@ -148,6 +160,7 @@ function scrobbleAnime(animeId, episode) {
                 fetch(url2, options).then(function (response) {
                     chrome.browserAction.setBadgeText({text: '+'});
                     chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
+                    scrobbling = {error: null, origin: null};
                     clearInterval(mainLoop);
                 }).catch(function(error) {
                     console.error(error);
@@ -155,6 +168,45 @@ function scrobbleAnime(animeId, episode) {
             })
         }).catch(function(error) {
             console.error(error);
+        });
+    });
+}
+
+function getFeed(animeId, episode) {
+    return new Promise(resolve => {
+        getCredentials().then(function(userdata) {
+            var url = 'https://kitsu.io/api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D=' + animeId + '&page%5Boffset%5D=' + (parseInt(episode) - 1) + '&page%5Blimit%5D=1',
+                options = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/vnd.api+json',
+                        'Accept': 'application/vnd.api+json',
+                        'Authorization': 'Bearer ' + userdata.atoken,
+                    }
+                };
+
+            fetch(url, options).then(function (response) {
+                response.json().then(function(jsondata) {
+                    var episodeId = jsondata.data[0].id;
+                    var url2 = 'https://kitsu.io/api/edge/feeds/episode_aggr/' + episodeId + '?include=media%2Cactor%2Cunit%2Csubject%2Ctarget%2Ctarget.user%2Ctarget.target_user%2Ctarget.spoiled_unit%2Ctarget.media%2Ctarget.target_group%2Csubject.user%2Csubject.target_user%2Csubject.spoiled_unit%2Csubject.media%2Csubject.target_group%2Csubject.followed%2Csubject.library_entry%2Csubject.anime%2Csubject.manga&page%5Blimit%5D=10';
+                    fetch(url2, options).then(function(response) {
+                        response.json().then(function(jsondata) {
+                            jsondata.data.forEach((element, index) => {
+                                jsondata.data[index].activity = jsondata.included.find(element2 => {
+                                    return (element2.type == 'activities' && element2.id == element.relationships.activities.data[0].id);
+                                });
+                                jsondata.data[index].user = jsondata.included.find(element2 => {
+                                    return (element2.type == 'users' && element2.id == jsondata.data[index].activity.relationships.actor.data.id);
+                                });
+                                jsondata.data[index].post = jsondata.included.find(element2 => {
+                                    return ((element2.type == 'posts' || element2.type == 'comments') && element2.id == jsondata.data[index].activity.relationships.subject.data.id);
+                                });
+                            });
+                            resolve(jsondata.data);
+                        });
+                    });
+                });
+            });
         });
     });
 }

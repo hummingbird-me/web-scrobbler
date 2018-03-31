@@ -44,6 +44,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
             console.log({tabId: tabId, timer: mainTimer, event: 'tab changed url'});
             mainTimer.pause();
             mainTimer = undefined;
+            scrobbling = {error: null, origin: null};
             chrome.browserAction.setBadgeText({text: ''});
         } else if (typeof changeInfo.audible == 'boolean' && changeInfo.audible) {
             console.log({tabId: tabId, timer: mainTimer, event: 'audible', remaining: mainTimer.getRemaining()});
@@ -64,6 +65,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
         mainTimer.pause();
         mainTimer = undefined;
         chrome.browserAction.setBadgeText({text: ''});
+        scrobbling = {error: null, origin: null};
     }
 });
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -98,26 +100,50 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                             chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
                             mainTimer = new Timer(scrobbleAnime, parseInt(jsondata.data[0].attributes.episodeLength * 0.75 * 60 * 1000), jsondata.data[0].id, message.episode_number);
                         }
+                        getFeed(scrobbling.animeData.id, scrobbling.episode).then(function(data) {
+                            scrobbling.discussdata = data;
+                        });
                     });
                 } else {
                     // TODO : promptAnime ?
                     getAnimeProgress(jsondata.data[0].id).then(function(animeProgress) {
                         console.log('hey there bis !');
-                        scrobbling = {error: 'none', animeData: jsondata.data[0], progress: animeProgress, episode: message.episode_number, origin: sender.tab.id};
+                        scrobbling = {error: 'none', animeData: jsondata.data[0], progress: animeProgress, episode: message.episode_number, origin: sender.tab.id, chooseData: jsondata.data};
                         if (jsondata.data[0].attributes.episodeLength == null) {
                             scrobbling.notice = chrome.i18n.getMessage('timeNull');
                             chrome.browserAction.setBadgeText({text: '!'});
                             chrome.browserAction.setBadgeBackgroundColor({color: '#a86d00'});
                         } else {
-                            chrome.browserAction.setBadgeText({text: 'OK'});
-                            chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
+                            chrome.browserAction.setBadgeText({text: 'OK?'});
+                            chrome.browserAction.setBadgeBackgroundColor({color: '#f7ca42'});
                             mainTimer = new Timer(scrobbleAnime, parseInt(jsondata.data[0].attributes.episodeLength * 0.75 * 60 * 1000), jsondata.data[0].id, message.episode_number);
-                        }                    
+                        }
+                        getFeed(scrobbling.animeData.id, scrobbling.episode).then(function(data) {
+                            scrobbling.discussdata = data;
+                        });               
                     });
                 }
             });
         }).catch(function(reason) {
             error = [true, reason];
+        });
+    } else if (message.action == 'setScrobbling') {
+        console.log(message);
+        console.log(scrobbling.chooseData);
+        mainTimer.pause();
+        mainTimer = undefined;
+        getAnimeProgress(scrobbling.chooseData[message.id].id).then(function(animeProgress) {
+            console.log('setScrobbling !');
+            if (scrobbling.chooseData[message.id].attributes.episodeLength == null) {
+                scrobbling.notice = chrome.i18n.getMessage('timeNull');
+                chrome.browserAction.setBadgeText({text: '!'});
+                chrome.browserAction.setBadgeBackgroundColor({color: '#a86d00'});
+            } else {
+                chrome.browserAction.setBadgeText({text: 'OK'});
+                chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
+                mainTimer = new Timer(scrobbleAnime, parseInt(scrobbling.chooseData[message.id].attributes.episodeLength * 0.75 * 60 * 1000), scrobbling.chooseData[message.id].id, scrobbling.episode);
+            }
+            scrobbling = {error: 'none', animeData: scrobbling.chooseData[message.id], progress: animeProgress, episode: scrobbling.episode, origin: scrobbling.origin};
         });
     } else if (message.action == 'getScrobbling') {
         sendResponse(scrobbling);
