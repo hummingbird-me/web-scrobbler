@@ -14,60 +14,42 @@
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
-//Localize by replacing __MSG_***__ meta tags
-var objects = document.getElementsByTagName('html');
-for (var j = 0; j < objects.length; j++) {
-    var obj = objects[j];
-
-    var valStrH = obj.innerHTML.toString();
-    var valNewH = valStrH.replace(/__MSG_(\w+)__/g, function(match, v1) {
-        return v1 ? chrome.i18n.getMessage(v1) : '';
-    });
-
-    if (valNewH != valStrH) {
-        obj.innerHTML = valNewH;
-    }
-}
-
-$('#unsure').hide();
-$('#settings').click(function() {
-    chrome.runtime.openOptionsPage();
-});
-chrome.runtime.sendMessage({action: 'getScrobbling'}, function (scrobbling) {
-    if (scrobbling.error == 'none') {
-        if (scrobbling.animeData.attributes.coverImage) {
-            $('#animecover').attr('src', scrobbling.animeData.attributes.coverImage.tiny);
-        }
-        $('#title').text(scrobbling.animeData.attributes.canonicalTitle);
-        $('#synopsis').text(scrobbling.animeData.attributes.synopsis);
-        $('#notice').text(scrobbling.notice);
-        $('.progress').progress({
-            total: scrobbling.animeData.attributes.episodeCount
-        });
-        $('.progress').progress('set progress', scrobbling.progress);
-        $('.label').append(scrobbling.progress + '/' + scrobbling.animeData.attributes.episodeCount);
-        $('#scrobblenow').click(function() {
-            chrome.runtime.sendMessage({action: 'scrobbleNow'}, function(response) {
-                console.log('scrobbled');
-                $('#notice').text(chrome.i18n.getMessage('scrobbled'));
-                $('#scrobblenow').remove();
+var vm;
+chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
+    vm = new Vue({
+        el: '.content',
+        data: {
+            scrobbling: scrobbling
+        },
+        methods: {
+            trans: function(id) {
+                return chrome.i18n.getMessage(id);
+            },
+            mjsnow: function(date) {
+                return moment(date).fromNow();
+            },
+            showComment: function(comment) {
+                var target = comment.path.find(element => {
+                    return element.nodeName === 'A';
+                });
+                $(target).parent().parent().children('.end').show();
+                $(target).parent().hide();
+            },
+            scrobbleNow: function(cevent) {
+                chrome.runtime.sendMessage({action: 'scrobbleNow'}, function(response) {
+                    console.log('scrobbled');
+                    // console.log(this);
+                    $(cevent.target).remove();
+                    // TODO : fix : vm.scrobbling.notice = chrome.i18n.getMessage('scrobbled');
+                });
+            },
+            openOptions: function() {chrome.runtime.openOptionsPage();}
+        },
+        created: function() {
+            $('.progress').progress({
+                total: scrobbling.animeData.attributes.episodeCount
             });
-        });
-        if (typeof scrobbling.chooseData == 'object') {
-            $('#unsure').show();
+            $('.progress').progress('set progress', scrobbling.progress);
         }
-        scrobbling.discussdata.forEach(element => {
-            $('#comments').append('<div class="ui segment"><strong>' + element.user.attributes.name + '</strong><br/>' + element.post.attributes.contentFormatted + '<em>' + element.post.attributes.createdAt + '</em></div>');
-        });
-    } else if (scrobbling.error == null) {
-        $('#content').empty();
-        $('#content').text(chrome.i18n.getMessage('nothing'));
-    } else if (scrobbling.error == 'notfound') {
-        $('#content').empty();
-        $('#content').text(chrome.i18n.getMessage('noresults'));
-    } else if (scrobbling.error == 'noacc') {
-        $('#animecover, .progress, #scrobblenow').remove();
-        $('#title').text(chrome.i18n.getMessage('welcomePopupTitle'));
-        $('#synopsis').text(chrome.i18n.getMessage('welcomePopupMessage'));
-    }
+    });
 });

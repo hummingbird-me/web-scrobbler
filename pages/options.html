@@ -18,28 +18,27 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>__MSG_settings__ - __MSG_appName__</title>
 </head>
 <body>
-    <div>
-        <h2>__MSG_settings__</h2>
-        <h3>__MSG_loginTitle__</h3>
-        <form onSubmit="submitLogin();" class="ui form">
+    <div class="container">
+        <h2>{{ trans('settings') }}</h2>
+        <h3>{{ trans('loginTitle') }}</h3>
+        <form @submit="submitLogin">
             <div class="field">
-              <label>__MSG_email__</label>
-              <input type="text" id="login" name="login" placeholder="__MSG_email__">
+              <label>{{ trans('email') }}</label>
+              <input type="email" id="login" name="login" required="required" :placeholder="trans('email')">
             </div>
             <div class="field">
-              <label>__MSG_password__</label>
-              <input type="password" id="password" name="password" placeholder="__MSG_password__">
+              <label>{{ trans('password') }}</label>
+              <input type="password" id="password" name="password" required="required" :placeholder="trans('password')">
             </div>
+            <input type="submit" :value="trans('login')"></input>
         </form>
-        <br/>
-        <button id="submitbtn">__MSG_login__</button>
         <br/>
         <p id="notice"></p>
     </div>
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/vue/dist/vue.js"></script>
     <script src="options.js"></script>
 </body>
 </html>

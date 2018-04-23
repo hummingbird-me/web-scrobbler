@@ -16,35 +16,58 @@ Main runtime
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
-var scrobbling = {error: null, origin: null};
+var scrobbling = {error: null, origin: null, chooseData: []};
 var error;
 var mainTimer;
 // Reset runtime
 chrome.browserAction.setBadgeText({text: ''});
 chrome.browserAction.setBadgeBackgroundColor({color: '#a86d00'});
-getCredentials().catch(function(reason) {
+// Check the token state
+getCredentials().then(function(result) {
+    var url = 'https://kitsu.io/api/edge/users?filter[self]=true',
+        options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/vnd.api+json',
+                'Accept': 'application/vnd.api+json',
+                'Authorization': 'Bearer ' + result.atoken
+            },
+        };
+
+    fetch(url, options).catch(function(reason) {
+        chrome.notifications.create('kitsuBadToken', {
+            type: 'basic',
+            iconUrl: '../img/logo230.png',
+            title: chrome.i18n.getMessage('badTokenNotificationTitle'),
+            message: chrome.i18n.getMessage('badTokenNotificationMessage')
+        });
+
+        scrobbling = {error: 'exptoken'};
+    });
+}).catch(function(reason) {
     chrome.notifications.create('kitsuLogin', {
         type: 'basic',
         iconUrl: '../img/logo230.png',
         title: chrome.i18n.getMessage('welcomeNotificationTitle'),
         message: chrome.i18n.getMessage('welcomeNotificationMessage')
     });
-    chrome.notifications.onClicked.addListener(function(notificationId) {
-        if (notificationId == 'kitsuLogin') {
-            chrome.runtime.openOptionsPage();
-            chrome.notifications.clear('kitsuLogin');
-        }
-    });
+    
     scrobbling = {error: 'noacc'};
 });
 
+chrome.notifications.onClicked.addListener(function(notificationId) {
+    if (notificationId == 'kitsuLogin' || notificationId == 'kitsuBadToken') {
+        chrome.runtime.openOptionsPage();
+        chrome.notifications.clear(notificationId);
+    }
+});
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     if (scrobbling.origin == tabId && typeof mainTimer == 'object') {
         if (typeof changeInfo.url == 'string') {
             console.log({tabId: tabId, timer: mainTimer, event: 'tab changed url'});
             mainTimer.pause();
             mainTimer = undefined;
-            scrobbling = {error: null, origin: null};
+            scrobbling = {error: null, origin: null, chooseData: []};
             chrome.browserAction.setBadgeText({text: ''});
         } else if (typeof changeInfo.audible == 'boolean' && changeInfo.audible) {
             console.log({tabId: tabId, timer: mainTimer, event: 'audible', remaining: mainTimer.getRemaining()});
@@ -65,7 +88,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
         mainTimer.pause();
         mainTimer = undefined;
         chrome.browserAction.setBadgeText({text: ''});
-        scrobbling = {error: null, origin: null};
+        scrobbling = {error: null, origin: null, chooseData: []};
     }
 });
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
@@ -131,7 +154,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         console.log(message);
         console.log(scrobbling.chooseData);
         mainTimer.pause();
-        mainTimer = undefined;
         getAnimeProgress(scrobbling.chooseData[message.id].id).then(function(animeProgress) {
             console.log('setScrobbling !');
             if (scrobbling.chooseData[message.id].attributes.episodeLength == null) {
@@ -143,12 +165,17 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
                 chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
                 mainTimer = new Timer(scrobbleAnime, parseInt(scrobbling.chooseData[message.id].attributes.episodeLength * 0.75 * 60 * 1000), scrobbling.chooseData[message.id].id, scrobbling.episode);
             }
-            scrobbling = {error: 'none', animeData: scrobbling.chooseData[message.id], progress: animeProgress, episode: scrobbling.episode, origin: scrobbling.origin};
+            scrobbling = {error: 'none', animeData: scrobbling.chooseData[message.id], progress: animeProgress, episode: scrobbling.episode, origin: scrobbling.origin, chooseData: []};
+            getFeed(scrobbling.animeData.id, scrobbling.episode).then(function(data) {
+                scrobbling.discussdata = data;
+                sendResponse(true);
+            }); 
         });
     } else if (message.action == 'getScrobbling') {
         sendResponse(scrobbling);
     } else if (message.action == 'scrobbleNow') {
         scrobbleAnime(scrobbling.animeData.id, scrobbling.episode);
+        scrobbling.notice = chrome.i18n.getMessage('scrobbled');
         sendResponse(true);
     } else {
         console.error('Unknown runtime message', message);

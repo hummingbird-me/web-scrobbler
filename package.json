@@ -23,7 +23,9 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "jquery-inline-popup": "^1.0.2",
+    "moment": "^2.22.1",
     "semantic-ui-progress": "^2.3.1",
-    "semantic-ui-segment": "^2.3.1"
+    "semantic-ui-segment": "^2.3.1",
+    "vue": "^2.5.16"
   }
 }

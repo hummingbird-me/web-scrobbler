@@ -41,6 +41,12 @@
     "welcomeNotificationMessage": {
         "message": "Click on me or go in settings to login to your Kitsu account !"
     },
+    "badTokenNotificationTitle": {
+        "message": "Kitsu authentication has expired"
+    },
+    "badTokenNotificationMessage": {
+        "message": "Click on me or go in settings to re-login to your Kitsu account !"
+    },
     "welcomePopupTitle": {
         "message": "Welcome on Kitsu Scrobbler !"
     },
@@ -64,5 +70,23 @@
     },
     "communityPosts": {
         "message": "Community posts"
+    },
+    "nsfwWarn": {
+        "message": "This post contains NSFW content."
+    },
+    "nsfwConfirm": {
+        "message": "My body is ready!"
+    },
+    "spoilerWarn": {
+        "message": "This post contains spoilers."
+    },
+    "spoilerConfirm": {
+        "message": "I can handle the truth!"
+    },
+    "comboWarn": {
+        "message": "Contains spoilers and NSFW"
+    },
+    "comboConfirm": {
+        "message": "My body is ready!"
     }
 }
