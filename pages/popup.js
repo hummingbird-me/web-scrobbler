@@ -14,6 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
+if (new URL(document.location.href).searchParams.get('popup')) $('body').css('width', 'auto');
 var vm;
 chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
     vm = new Vue({
@@ -43,13 +44,42 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                     // TODO : fix : vm.scrobbling.notice = chrome.i18n.getMessage('scrobbled');
                 });
             },
-            openOptions: function() {chrome.runtime.openOptionsPage();}
+            openOptions: function() {chrome.runtime.openOptionsPage();},
+            openDropdown: function(e) {
+                e.preventDefault();
+                var target = e.path.find(element => {
+                    return element.nodeName === 'SPAN';
+                });
+                $(target).toggleClass('open');
+            },
+            pDefault: function(e) {
+                e.preventDefault();
+                console.warn('Report and Block events are not handled for now');
+            },
+            copyLink: function(e) {
+                e.preventDefault();
+                $(e.target).parent().parent().toggleClass('open');
+            },
+            followPost: function(e) {
+                e.preventDefault();
+                followPost($(e.target).attr('data-post-id'));
+                $(e.target).parent().parent().toggleClass('open');
+            },
+            likePost: function(e) {
+                e.preventDefault();
+                var target = e.path.find(element => {
+                    return element.nodeName === 'A';
+                });
+                likePost($(target).attr('data-post-id'));
+                $(target).addClass('is-liked');
+            }
         },
         created: function() {
             $('.progress').progress({
                 total: scrobbling.animeData.attributes.episodeCount
             });
             $('.progress').progress('set progress', scrobbling.progress);
+            var clipboard = new ClipboardJS('.copylink');
         }
     });
 });

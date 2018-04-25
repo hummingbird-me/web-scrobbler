@@ -1,0 +1,441 @@
+/*! CSS Used from: https://kitsu.io/assets/light-2678deeda5754314553fd9b29c12f311.css
+    This file is part of Kitsu Web Scrobbler.
+
+    Kitsu Web Scrobbler is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Kitsu Web Scrobbler is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+body {
+    font-family: Asap, Helvetica, sans-serif;
+}
+
+[type=button],
+button {
+    cursor: pointer;
+}
+
+input[type=search] {
+    -webkit-appearance: none;
+}
+
+button,
+input {
+    overflow: visible;
+}
+
+textarea {
+    overflow: auto;
+}
+
+a {
+    background-color: transparent;
+}
+
+a:active,
+a:hover {
+    outline-width: 0;
+}
+
+label {
+    margin-bottom: .5rem;
+}
+
+img {
+    border-style: none;
+    vertical-align: middle;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    text-transform: none;
+}
+
+[disabled] {
+    cursor: default;
+}
+
+button,
+html [type=button] {
+    -webkit-appearance: button;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+button:-moz-focusring,
+input:-moz-focusring {
+    outline: ButtonText dotted 1px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+[type=checkbox] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+[type=search] {
+    -webkit-appearance: textfield;
+}
+
+@media print {
+    img {
+        page-break-inside: avoid;
+    }
+    *,
+    ::after,
+    ::before,
+    ::first-letter,
+    ::first-line {
+        text-shadow: none !important;
+        box-shadow: none !important;
+    }
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+}
+
+label {
+    display: inline-block;
+}
+
+*,
+::after,
+::before {
+    box-sizing: inherit;
+}
+
+a:focus,
+a:hover {
+    color: #014c8c;
+    text-decoration: underline;
+}
+
+a:focus {
+    outline: -webkit-focus-ring-color auto 5px;
+    outline-offset: -2px;
+}
+
+.form-control:disabled,
+input[type=checkbox]:disabled {
+    cursor: not-allowed;
+}
+
+a,
+button,
+input,
+label,
+textarea {
+    touch-action: manipulation;
+}
+
+button:focus {
+    outline: dotted 1px;
+    outline: -webkit-focus-ring-color auto 5px;
+}
+
+button,
+input,
+textarea {
+    margin: 0;
+    line-height: inherit;
+    border-radius: 0;
+}
+
+.button {
+    white-space: nowrap;
+}
+
+.form-control {
+    display: block;
+}
+
+.form-control {
+    width: 100%;
+    padding: .5rem .75rem;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #55595c;
+    background-color: #fff;
+    background-image: none;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: .25rem;
+}
+
+.form-control::-ms-expand {
+    background-color: transparent;
+    border: 0;
+}
+
+.form-control:focus {
+    color: #55595c;
+    background-color: #fff;
+    border-color: #66afe9;
+    outline: 0;
+}
+
+.form-control:-ms-input-placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.form-control::-ms-input-placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.form-control::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.form-control:disabled {
+    background-color: #eceeef;
+    opacity: 1;
+}
+
+.button {
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.25;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .5rem 1rem;
+    font-size: 1rem;
+    border-radius: .25rem;
+}
+
+.button:active:focus,
+.button:focus {
+    outline: -webkit-focus-ring-color auto 5px;
+    outline-offset: -2px;
+}
+
+.button:focus,
+.button:hover {
+    text-decoration: none;
+}
+
+.button:active {
+    background-image: none;
+    outline: 0;
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+.custom-control {
+    position: relative;
+}
+
+.custom-control {
+    display: inline;
+    padding-left: 1.5rem;
+    cursor: pointer;
+}
+
+.custom-control+.custom-control {
+    margin-left: 1rem;
+}
+
+.custom-control-input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.custom-control-input:checked~.custom-control-indicator {
+    color: #fff;
+    background-color: #0074d9;
+}
+
+.custom-control-input:focus~.custom-control-indicator {
+    box-shadow: 0 0 0 .075rem #fff, 0 0 0 .2rem #0074d9;
+}
+
+.custom-control-input:active~.custom-control-indicator {
+    color: #fff;
+    background-color: #84c6ff;
+}
+
+.custom-control-input:disabled~.custom-control-indicator {
+    cursor: not-allowed;
+    background-color: #eee;
+}
+
+.custom-control-input:disabled~.custom-control-description {
+    color: #767676;
+    cursor: not-allowed;
+}
+
+.custom-control-indicator {
+    position: absolute;
+    top: .0625rem;
+    left: 0;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #ddd;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+}
+
+.custom-checkbox .custom-control-indicator {
+    border-radius: .25rem;
+}
+
+.custom-checkbox .custom-control-input:checked~.custom-control-indicator {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3E%3C/svg%3E");
+}
+
+.stream-add-content {
+    position: relative;
+    display: block;
+    margin-bottom: .75rem;
+    background-color: #fff;
+    border-radius: .25rem;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+:focus {
+    outline-color: transparent;
+    outline-style: none;
+}
+
+img {
+    max-width: 100%;
+}
+
+[data-ember-action]:not(:disabled) {
+    cursor: pointer;
+}
+
+.stream-add-content {
+    background: #FFF;
+    color: #464646;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+    border: 1px solid rgba(0, 0, 0, .09);
+}
+
+a {
+    color: #f75239;
+    font-family: Asap, sans-serif;
+}
+
+a:hover,
+a:visited:hover {
+    color: #f3290a;
+}
+
+.feed-stream .author-name {
+    font-family: Asap, sans-serif;
+}
+
+.feed-stream .author-name {
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.add-content-footer,
+.add-content-header {
+    padding: 20px;
+}
+
+.add-content-footer .button {
+    padding: 10px 30px;
+    margin-right: 15px;
+}
+
+.tag-media {
+    border-top: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.tag-media input {
+    border-radius: 0;
+    border: none;
+    padding: 10px 20px;
+    background: #FFF;
+}
+
+.stream-content-editor {
+    min-height: 100px;
+    margin-top: 0;
+    padding: 0 20px;
+    overflow: hidden;
+    width: 100%;
+    border: none;
+    background: #FFF;
+    color: #55595c;
+    box-sizing: border-box;
+}
+
+.button {
+    font-family: Asap, sans-serif;
+}
+
+.button {
+    letter-spacing: .05em;
+    transition: all .2s ease;
+}
+
+.button--primary {
+    background-color: #16a085;
+    color: #FFF;
+    padding: 10px 60px;
+    box-shadow: 0 0 0 transparent;
+}
+
+.button--primary:hover {
+    background: #19b698;
+    color: #FFF !important;
+}
+
+.button--primary:disabled {
+    background: #B4B4B4;
+    opacity: 1;
+}

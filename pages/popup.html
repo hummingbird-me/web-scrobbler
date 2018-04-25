@@ -19,8 +19,8 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../node_modules/semantic-ui-progress/progress.min.css">
-    <link rel="stylesheet" href="../node_modules/semantic-ui-segment/segment.min.css">
     <link rel="stylesheet" href="../css/popup.css">
+    <link rel="stylesheet" href="../css/post.css">
     <link rel="stylesheet" href="../css/gate.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Asap">
 </head>
@@ -49,47 +49,90 @@
                 <div class="label">{{ trans('animeProgress') }} : {{ scrobbling.progress }} / {{ scrobbling.animeData.attributes.episodeCount }}</div>
             </div>
             <p v-if="scrobbling.notice">{{ scrobbling.notice }}<br></p>
-            <button v-if="!scrobbling.scrobbled" v-on:click="scrobbleNow">{{ trans('scrobbleNow') }}</button>
-            <p>{{ scrobbling.animeData.attributes.synopsis }}</p>
+            <a href="#" @click="scrobbleNow" v-if="!scrobbling.scrobbled" class="button button--primary">{{ trans('scrobbleNow') }}</a>
+            <p class="synopsis">{{ scrobbling.animeData.attributes.synopsis }}</p>
             <div class="comments">
                 <h3 v-if="scrobbling.discussdata.length != 0">{{ trans('communityPosts') }}</h3>
-                <div class="ui segment" v-for="post in scrobbling.discussdata">
-                    <div><strong>{{ post.user.attributes.name }}</strong></div>
-                    <article v-if="!post.post.attributes.nsfw && !post.post.attributes.spoiler">
-                        <span v-html="post.post.attributes.contentFormatted"></span>
-                    </article>
-                    <article v-else-if="post.post.attributes.nsfw && !post.post.attributes.spoiler">
-                        <div class="nsfw-gate">
-                            <br>
-                            <a class="showlink" @click="showComment">
-                                <div class="gate--label">{{ trans('nsfwWarn') }}</div>
-                                <div class="gate--hover">{{ trans('nsfwConfirm') }}</div>
+                <div v-for="post in scrobbling.discussdata" class="occludable-area ember-view">
+                <div class="row stream-item ember-view">
+                <div class="stream-item-wrapper col-sm-12">
+                    <div class="stream-item--title-block">
+                        <span class="avatar-block">
+                            <a :href="'https://kitsu.io' + post.user.links.self" target="_blank" class="author-avatar">
+                                <div class="lazy-image is-loaded ember-view">
+                                    <img v-if="post.user.attributes.avatar" :src="post.user.attributes.avatar.medium">
+                                </div>
+                            </a>
+                        </span>
+        
+                        <div class="author-info">
+                            <a :href="'https://kitsu.io' + post.user.links.self" class="author-name">
+                                {{ post.user.attributes.name }}
+                            </a>
+                            <a :href="'https://kitsu.io' + post.post.links.self">
+                                <small class="secondary-text">
+                                    {{ mjsnow(post.post.attributes.createdAt) }}
+                                </small>
                             </a>
                         </div>
-                        <div class="end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
-                    </article>
-                    <article v-else-if="!post.post.attributes.nsfw && post.post.attributes.spoiler">
-                        <div class="spoiler-gate">
-                            <br>
-                            <a class="showlink" @click="showComment">
-                                <div class="gate--label">{{ trans('spoilerWarn') }}</div>
-                                <div class="gate--hover">{{ trans('spoilerConfirm') }}</div>
-                            </a>
+                    </div>
+                    <span>
+                        <div class="stream-content" v-if="!post.post.attributes.nsfw && !post.post.attributes.spoiler">
+                            <div class="stream-content-post" v-html="post.post.attributes.contentFormatted"></div>
                         </div>
-                        <div class="end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
-                    </article>
-                    <article v-else-if="post.post.attributes.nsfw && post.post.attributes.spoiler">
-                        <div class="combo-gate">
-                            <br>
-                            <a class="showlink" @click="showComment">
-                                <div class="gate--label">{{ trans('comboWarn') }}</div>
-                                <div class="gate--hover">{{ trans('comboConfirm') }}</div>
-                            </a>
+                        <div class="stream-content" v-else-if="post.post.attributes.nsfw && !post.post.attributes.spoiler">
+                            <div class="nsfw-gate">
+                                <a class="showlink" @click="showComment">
+                                    <div class="gate--label">{{ trans('nsfwWarn') }}</div>
+                                    <div class="gate--hover">{{ trans('nsfwConfirm') }}</div>
+                                </a>
+                            </div>
+                            <div class="stream-content-post end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
                         </div>
-                        <div class="end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
-                    </article>
-                    <div><em>{{ mjsnow(post.post.attributes.createdAt) }}</em></div>
-                </div>
+                        <div class="stream-content" v-else-if="!post.post.attributes.nsfw && post.post.attributes.spoiler">
+                            <div class="spoiler-gate">
+                                <a class="showlink" @click="showComment">
+                                    <div class="gate--label">{{ trans('spoilerWarn') }}</div>
+                                    <div class="gate--hover">{{ trans('spoilerConfirm') }}</div>
+                                </a>
+                            </div>
+                            <div class="stream-content-post end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
+                        </div>
+                        <div class="stream-content" v-else-if="post.post.attributes.nsfw && post.post.attributes.spoiler">
+                            <div class="combo-gate">
+                                <a class="showlink" @click="showComment">
+                                    <div class="gate--label">{{ trans('comboWarn') }}</div>
+                                    <div class="gate--hover">{{ trans('comboConfirm') }}</div>
+                                </a>
+                            </div>
+                            <div class="stream-content-post end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
+                        </div>
+                        <div class="stream-item-activity">
+                            <div id="ember1451" class="d-inline ember-view">
+                                <a @click="likePost" :data-post-id="post.post.id" href="#" class="like-stream-item" v-bind:class="{ 'is-liked': post.liked }">
+                                    <span class="heart-wrapper"></span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="stream-item-options">
+                                <!---->
+                                <span class="more-wrapper">
+                                    <a href="#" @click="openDropdown" data-toggle="dropdown" class="more-drop">
+                                        <svg width="24" height="6" viewBox="0 0 24 6" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm9 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm9 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"
+                                                fill="#CACACA" fill-rule="evenodd"></path>
+                                        </svg>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a href="#" @click="copyLink" class="dropdown-item copylink" :data-clipboard-text="'https://kitsu.io/posts/' + post.post.id">Copy Link to Post</a>
+                                        <a href="#" @click="followPost" class="dropdown-item" :data-post-id="post.post.id">Follow Post</a>
+                                        <a href="#" @click="pDefault" class="dropdown-item">Report Post</a>
+                                        <a href="#" @click="pDefault" class="dropdown-item">Block @{{ post.user.attributes.name }}</a>
+                                    </div>
+                                </span>
+                            </div>
+                    </span>
+                </div></div></div>
             </div> 
         </div>
         <br>
@@ -102,6 +145,7 @@
     <script src="../node_modules/semantic-ui-progress/progress.min.js"></script>
     <script src="../node_modules/moment/moment.js"></script>
     <script src="../node_modules/vue/dist/vue.js"></script>
+    <script src="../node_modules/clipboard/dist/clipboard.min.js"></script>
     <script src="../global.js"></script>
     <script src="popup.js"></script>
 </body>

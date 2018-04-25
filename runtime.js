@@ -34,15 +34,19 @@ getCredentials().then(function(result) {
             },
         };
 
-    fetch(url, options).catch(function(reason) {
-        chrome.notifications.create('kitsuBadToken', {
-            type: 'basic',
-            iconUrl: '../img/logo230.png',
-            title: chrome.i18n.getMessage('badTokenNotificationTitle'),
-            message: chrome.i18n.getMessage('badTokenNotificationMessage')
-        });
-
-        scrobbling = {error: 'exptoken'};
+    fetch(url, options).then(function(data) {
+        data.json().then(function(jsondata) {
+            if (jsondata.meta.count === 0) {
+                chrome.notifications.create('kitsuBadToken', {
+                    type: 'basic',
+                    iconUrl: '../img/logo230.png',
+                    title: chrome.i18n.getMessage('badTokenNotificationTitle'),
+                    message: chrome.i18n.getMessage('badTokenNotificationMessage')
+                });
+        
+                scrobbling = {error: 'exptoken'};
+            }
+        });  
     });
 }).catch(function(reason) {
     chrome.notifications.create('kitsuLogin', {

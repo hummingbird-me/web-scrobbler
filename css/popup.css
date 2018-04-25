@@ -33,3 +33,162 @@ img {
 .content {
     margin: 8px;
 }
+
+.synopsis {
+    margin-top: 1em;
+}
+
+/*! CSS Used from: https://kitsu.io/assets/light-2678deeda5754314553fd9b29c12f311.css */
+a {
+    background-color: transparent;
+}
+
+a:active,
+a:hover {
+    outline-width: 0;
+}
+
+@media print {
+    *,
+    ::after,
+    ::before,
+    ::first-letter,
+    ::first-line {
+        text-shadow: none !important;
+        box-shadow: none !important;
+    }
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+}
+
+*,
+::after,
+::before {
+    box-sizing: inherit;
+}
+
+a:focus,
+a:hover {
+    color: #014c8c;
+    text-decoration: underline;
+}
+
+a:focus {
+    outline: -webkit-focus-ring-color auto 5px;
+    outline-offset: -2px;
+}
+
+a {
+    touch-action: manipulation;
+}
+
+.button {
+    white-space: nowrap;
+}
+
+.button {
+    display: block;
+    font-weight: 400;
+    line-height: 1.25;
+    text-align: center;
+    /*vertical-align: middle;*/
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .5rem 1rem;
+    font-size: 1rem;
+    border-radius: .25rem;
+    margin: auto;
+    width: 50%;
+}
+
+.button:active:focus,
+.button:focus {
+    outline: -webkit-focus-ring-color auto 5px;
+    outline-offset: -2px;
+}
+
+.button:focus,
+.button:hover {
+    text-decoration: none;
+}
+
+.button:active {
+    background-image: none;
+    outline: 0;
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+:focus {
+    outline-color: transparent;
+    outline-style: none;
+}
+
+[data-ember-action]:not(:disabled) {
+    cursor: pointer;
+}
+
+a {
+    color: #f75239;
+    font-family: Asap, sans-serif;
+}
+
+a:hover,
+a:visited:hover {
+    color: #f3290a;
+}
+
+.scrnow-placeholder .button {
+    font-size: 12px;
+}
+
+.scrnow-placeholder .button:hover {
+    color: #FFF;
+}
+
+.scrnow-panel a {
+    font-size: 12px;
+}
+
+.button {
+    font-family: Asap, sans-serif;
+}
+
+.button {
+    letter-spacing: .05em;
+    transition: all .2s ease;
+}
+
+.button--primary {
+    background-color: #16a085;
+    color: #FFF;
+    padding: 10px 60px;
+    box-shadow: 0 0 0 transparent;
+}
+
+.button--primary:hover {
+    background: #19b698;
+    color: #FFF !important;
+}
+
+.button--primary:disabled {
+    background: #B4B4B4;
+    opacity: 1;
+}

@@ -66,6 +66,30 @@ function getCredentials() {
     });
 }
 
+/**
+ * Do an API request to kitsu.io
+ * @param {string} endpoint api endpoint
+ * @param {Request} options fetch options, auth is by default added
+ */
+function doAPIRequest(endpoint, options) {
+    return new Promise((resolve, reject) => {
+        getCredentials().then(userdata => {
+            var url = 'https://kitsu.io/{0}'.format(endpoint);
+            if (!options.headers) options.headers = {
+                Authorization: 'Bearer {0}'.format(userdata.atoken),
+                'Content-Type': 'application/vnd.api+json',
+                Accept: 'application/vnd.api+json'
+            };
+            fetch(url, options).then(response => {
+                if (!response.ok) reject({error: 'fetchf', response: response});
+                response.json().then(json => {
+                    resolve(json);
+                });
+            });
+        });
+    });
+}
+
 function getAnimeProgress(animeId) {
     return new Promise(resolve => {
         getCredentials().then(function(userdata) {
@@ -89,6 +113,138 @@ function getAnimeProgress(animeId) {
                 });
             }).catch(function(reason) {
                 resolve(false);
+            });
+        });
+    });
+}
+
+function followPost(postid) {
+    return new Promise((resolve, reject) => {
+        getCredentials().then(userdata => {
+            doAPIRequest('api/edge/post-follows', {method: 'POST', body: JSON.stringify({
+                data: {
+                    relationships: {
+                        user: {
+                            data: {
+                                id: userdata.uid,
+                                type: 'users'
+                            }
+                        },
+                        post: {
+                            data: {
+                                id: postid,
+                                type: 'posts'
+                            }
+                        }
+                    },
+                    type: 'post-follows'
+                }
+            })}).then(json => {
+                resolve(json.data.id)
+            }).catch(reason => {
+                reject(reason);
+            });
+        });
+    });
+}
+
+function likePost(postId) {
+    return new Promise((resolve, reject) => {
+        getCredentials().then(userdata => {
+            doAPIRequest('api/edge/post-likes', {method: 'POST', body: JSON.stringify({
+                data: {
+                    relationships: {
+                        user: {
+                            data: {
+                                id: userdata.uid,
+                                type: 'users'
+                            }
+                        },
+                        post: {
+                            data: {
+                                id: postId,
+                                type: 'posts'
+                            }
+                        }
+                    },
+                    type: 'post-likes'
+                }
+            })}).then(json => {
+                resolve(json.data.id)
+            }).catch(reason => {
+                reject(reason);
+            });
+        });
+    });
+}
+
+function postFeed(animeId, episode, content) {
+    return new Promise((resolve, reject) => {
+        getCredentials().then(userdata => {
+            var url = 'https://kitsu.io/api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D=' + animeId + '&page%5Boffset%5D=' + (parseInt(episode) - 1) + '&page%5Blimit%5D=1',
+                options = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/vnd.api+json',
+                        'Accept': 'application/vnd.api+json',
+                        'Authorization': 'Bearer ' + userdata.atoken,
+                    }
+                };
+    
+            fetch(url, options).then(response => {
+                response.json().then(jsondata => {
+                    if (jsondata.data.length === 0) {
+                        reject({error: 'noepfeed'});
+                    } else {
+                        var url2 = 'https://kitsu.io/api/edge/posts',
+                            options2 = {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/vnd.api+json',
+                                    'Accept': 'application/vnd.api+json',
+                                    'Authorization': 'Bearer ' + userdata.atoken,
+                                },
+                                body: JSON.stringify({
+                                    data: {
+                                        attributes: {
+                                            content: content.text,
+                                            spoiler: content.spoiler,
+                                            nsfw: content.nsfw
+                                        },
+                                        type: 'posts',
+                                        relationships: {
+                                            media: {
+                                                data: {
+                                                    type: 'anime',
+                                                    id: animeId
+                                                }
+                                            },
+                                            spoiledUnit: {
+                                                data: {
+                                                    type: 'episodes',
+                                                    id: jsondata.data[0].id
+                                                }
+                                            },
+                                            user: {
+                                                data: {
+                                                    type: 'users',
+                                                    id: userdata.uid
+                                                }
+                                            }
+                                        }
+                                    }
+                                })
+                            }
+                        
+                        fetch(url2, options2).then(response => {
+                            if (response.ok) {
+                                resolve(response);
+                            } else {
+                                reject({error: 'fetchf'});
+                            }
+                        })
+                    }
+                });
             });
         });
     });
@@ -205,6 +361,12 @@ function getFeed(animeId, episode) {
                                     });
                                     jsondata.data[index].post = jsondata.included.find(element2 => {
                                         return ((element2.type == 'posts' || element2.type == 'comments') && element2.id == jsondata.data[index].activity.relationships.subject.data.id);
+                                    });
+                                    // must put an await here
+                                    doAPIRequest('api/edge/post-likes?filter[postId]={0}&filter[userId]={1}'.format(jsondata.data[index].post.id, userdata.uid), {method: 'GET'}).then(result => {
+                                        if (result.meta.count == 1) jsondata.data[index].liked == true;
+                                        if (result.meta.count != 1) jsondata.data[index].liked == false;
+                                        return;
                                     });
                                 });
                                 resolve(jsondata.data);

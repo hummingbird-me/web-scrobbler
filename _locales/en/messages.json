@@ -88,5 +88,14 @@
     },
     "comboConfirm": {
         "message": "My body is ready!"
+    },
+    "nsfw": {
+        "message": "NSFW"
+    },
+    "spoiler": {
+        "message": "Spoiler"
+    },
+    "post": {
+        "message": "Post"
     }
 }
