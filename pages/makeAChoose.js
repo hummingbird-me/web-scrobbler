@@ -14,6 +14,10 @@
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
+if (new URL(document.location.href).searchParams.get('popup')) {
+    $('body').css('width', 'auto');
+    $('.header a').attr('href', 'popup.html?popup=1')
+}
 var vm;
 chrome.runtime.sendMessage({action: 'getScrobbling'}, function(scrobbling) {
     vm = new Vue({

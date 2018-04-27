@@ -23,11 +23,46 @@ body {
 
 img {
     max-width: 100%;
+    display: block;
+    margin: 0 auto;
     height: auto;
+}
+
+.wip-warn > img.img {
+    height: 4em;
+    width: 4em;
+    display: block;
+}
+
+.wip-warn > p.center {
+    text-align: center;
+    margin: 0;
+}
+
+.wip-warn {
+    border-left: 0.5em solid orange;
+    background-color: #ebcead;
+    margin: 1em;
+    padding: 0.5em 1em;
 }
 
 .header {
     background-color: #402F3F;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+.right {
+    align-content: right;
+    display: inline-block;
+    position: absolute;
+    right: 1em;
+}
+
+.right > i {
+    font-size: 25px;
+    color: white;
+    cursor: pointer;
 }
 
 .content {

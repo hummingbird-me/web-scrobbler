@@ -44,7 +44,7 @@ getCredentials().then(function(result) {
                     message: chrome.i18n.getMessage('badTokenNotificationMessage')
                 });
         
-                scrobbling = {error: 'exptoken'};
+                scrobbling.error = 'exptoken';
             }
         });  
     });
@@ -56,7 +56,7 @@ getCredentials().then(function(result) {
         message: chrome.i18n.getMessage('welcomeNotificationMessage')
     });
     
-    scrobbling = {error: 'noacc'};
+    scrobbling.error = 'noacc';
 });
 
 chrome.notifications.onClicked.addListener(function(notificationId) {

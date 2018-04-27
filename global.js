@@ -330,51 +330,101 @@ function scrobbleAnime(animeId, episode) {
     });
 }
 
+/**
+ * Feed coroutine : parse the result of getFeed()
+ * @param {JSON} jsondata fetch result
+ * @return {Promise} parsed result
+ */
+function parseFeedResult(jsondata) {
+    return new Promise((resolve, reject) => {
+        var postsIds = [];
+        if (jsondata.data.length === 0) resolve([]);
+        getCredentials().then(userdata => {
+            var comments = [];
+            var posts = [];
+            for (i = 0; i < jsondata.data.length; i++) {
+                jsondata.data[i].activity = jsondata.included.find(element => {
+                    return (element.type == 'activities' && element.id == jsondata.data[i].relationships.activities.data[0].id);
+                });
+                jsondata.data[i].user = jsondata.included.find(element => {
+                    return (element.type == 'users' && element.id == jsondata.data[i].activity.relationships.actor.data.id);
+                });
+                if (!jsondata.data[i].activity.relationships.target.data) {
+                    jsondata.data[i].post = jsondata.included.find(element => {
+                        return (element.id == jsondata.data[i].activity.relationships.subject.data.id);
+                    });
+                    jsondata.data[i].comments = [];
+                    doAPIRequest('api/edge/post-likes?filter%5BpostId%5D={0}&filter%5BuserId%5D={1}'.format(jsondata.data[i].post.id, userdata.uid), {method: 'GET'}).then(result => {
+                        if (result.meta.count == 1) jsondata.data[i].liked = true;
+                        if (result.meta.count != 1) jsondata.data[i].liked = false;
+                    });
+                    console.log({iteration: i, type: 'post', data: jsondata.data[i]});
+                    posts.push(jsondata.data[i]);
+                } else {
+                    var tmp1 = jsondata.data[i];
+                    var tmp2 = jsondata.data[i];
+                    tmp1.post = jsondata.included.find(element => {
+                        return (element.id == tmp1.activity.relationships.target.data.id);
+                    });
+                    tmp1.user = jsondata.included.find(element => {
+                        return (element.id == tmp1.post.relationships.user.data.id);
+                    });
+                    tmp1.comments = [];
+                    doAPIRequest('api/edge/post-likes?filter%5BpostId%5D={0}&filter%5BuserId%5D={1}'.format(tmp1.post.id, userdata.uid), {method: 'GET'}).then(result => {
+                        if (result.meta.count == 1) tmp1.liked = true;
+                        if (result.meta.count != 1) tmp1.liked = false;
+                    });
+                    posts.push(tmp1);
+                    tmp2.post = jsondata.included.find(element => {
+                        return (element.id == tmp2.activity.relationships.target.data.id);
+                    });
+                    tmp2.comment = jsondata.included.find(element => {
+                        return (element.id == tmp2.activity.relationships.subject.data.id);
+                    });
+                    tmp2.comment.author = jsondata.included.find(element => {
+                        return (element.id == tmp2.comment.relationships.user.data.id);
+                    });
+                    doAPIRequest('api/edge/comment-likes?filter%5BcommentId%5D={0}&filter%5BuserId%5D={1}'.format(tmp2.comment.id, userdata.uid), {method: 'GET'}).then(result => {
+                        if (result.meta.count == 1) tmp2.liked = true;
+                        if (result.meta.count != 1) tmp2.liked = false;
+                    });
+                    console.log({iteration: i, type: 'comment', data: tmp2});
+                    comments.push(tmp2);
+                }
+            }
+            for (i = 0; i < comments.length; i++) {
+                for (ii = 0; ii < posts.length; ii++) {
+                    console.log({post: posts[ii], comment: comments[i], iteration: i, iteration2: ii});
+                    if (comments[i].post.id == posts[ii].post.id) {
+                        console.log('match !');
+                        // avoid Converting circular structure to JSON
+                        comment = comments[i].comment;
+                        console.log(comment);
+                        posts[ii].comments.push(comment);
+                    }
+                }
+            }
+            console.log({comments: comments, posts: posts});
+            resolve(posts);
+        });
+    });
+}
+
 function getFeed(animeId, episode) {
     return new Promise(resolve => {
-        getCredentials().then(function(userdata) {
-            var url = 'https://kitsu.io/api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D=' + animeId + '&page%5Boffset%5D=' + (parseInt(episode) - 1) + '&page%5Blimit%5D=1',
-                options = {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/vnd.api+json',
-                        'Accept': 'application/vnd.api+json',
-                        'Authorization': 'Bearer ' + userdata.atoken,
-                    }
-                };
-
-            fetch(url, options).then(function (response) {
-                response.json().then(function(jsondata) {
-                    if (jsondata.data.length == 0) {
-                        resolve([]);
-                    } else {
-                        var episodeId = jsondata.data[0].id;
-                        var url2 = 'https://kitsu.io/api/edge/feeds/episode_aggr/' + episodeId + '?include=media%2Cactor%2Cunit%2Csubject%2Ctarget%2Ctarget.user%2Ctarget.target_user%2Ctarget.spoiled_unit%2Ctarget.media%2Ctarget.target_group%2Csubject.user%2Csubject.target_user%2Csubject.spoiled_unit%2Csubject.media%2Csubject.target_group%2Csubject.followed%2Csubject.library_entry%2Csubject.anime%2Csubject.manga&page%5Blimit%5D=10';
-                        fetch(url2, options).then(function(response) {
-                            response.json().then(function(jsondata) {
-                                jsondata.data.forEach((element, index) => {
-                                    jsondata.data[index].activity = jsondata.included.find(element2 => {
-                                        return (element2.type == 'activities' && element2.id == element.relationships.activities.data[0].id);
-                                    });
-                                    jsondata.data[index].user = jsondata.included.find(element2 => {
-                                        return (element2.type == 'users' && element2.id == jsondata.data[index].activity.relationships.actor.data.id);
-                                    });
-                                    jsondata.data[index].post = jsondata.included.find(element2 => {
-                                        return ((element2.type == 'posts' || element2.type == 'comments') && element2.id == jsondata.data[index].activity.relationships.subject.data.id);
-                                    });
-                                    // must put an await here
-                                    doAPIRequest('api/edge/post-likes?filter[postId]={0}&filter[userId]={1}'.format(jsondata.data[index].post.id, userdata.uid), {method: 'GET'}).then(result => {
-                                        if (result.meta.count == 1) jsondata.data[index].liked == true;
-                                        if (result.meta.count != 1) jsondata.data[index].liked == false;
-                                        return;
-                                    });
-                                });
-                                resolve(jsondata.data);
-                            });
-                        });
-                    }   
+        doAPIRequest('api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D={0}&page%5Boffset%5D={1}&page%5Blimit%5D=1'.format(animeId, (parseInt(episode)) - 1), {method: 'GET'}).then(jsondata => {
+            if (jsondata.data.length == 0) {
+                resolve([]);
+            } else {
+                var episodeId = jsondata.data[0].id;
+                doAPIRequest('api/edge/feeds/episode_aggr/{0}?filter%5Bkind%5D=posts&include=media%2Cactor%2Cunit%2Csubject%2Ctarget%2Ctarget.user%2Ctarget.target_user%2Ctarget.spoiled_unit%2Ctarget.media%2Ctarget.target_group%2Csubject.user%2Csubject.target_user%2Csubject.spoiled_unit%2Csubject.media%2Csubject.target_group%2Csubject.followed%2Csubject.library_entry%2Csubject.anime%2Csubject.manga&page%5Blimit%5D=100'.format(episodeId), {
+                    method: 'GET'
+                }).then(data => {
+                    parseFeedResult(data).then(finaldata => {
+                        resolve(finaldata);
+                    });
                 });
-            });
+            }
         });
     });
 }

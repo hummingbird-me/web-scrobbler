@@ -14,11 +14,15 @@
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
-if (new URL(document.location.href).searchParams.get('popup')) $('body').css('width', 'auto');
+if (new URL(document.location.href).searchParams.get('popup')) {
+    $('body').css('width', 'auto');
+    $('.header .right').remove();
+    $('#mac').attr('href', 'makeAChoose.html?popup=1');
+}
 var vm;
 chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
     vm = new Vue({
-        el: '.content',
+        el: '.vue',
         data: {
             scrobbling: scrobbling
         },
@@ -29,12 +33,17 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
             mjsnow: function(date) {
                 return moment(date).fromNow();
             },
+            getVersion: function() {
+                return chrome.runtime.getManifest().version;
+            },
             showComment: function(comment) {
                 var target = comment.path.find(element => {
                     return element.nodeName === 'A';
                 });
                 $(target).parent().parent().children('.end').show();
                 $(target).parent().hide();
+                var comments = $(target).parents('.row.stream-item.ember-view')[0];
+                $(comments).children('.stream-item-comments.ember-view.end').show();
             },
             scrobbleNow: function(cevent) {
                 chrome.runtime.sendMessage({action: 'scrobbleNow'}, function(response) {
@@ -44,7 +53,10 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                     // TODO : fix : vm.scrobbling.notice = chrome.i18n.getMessage('scrobbled');
                 });
             },
-            openOptions: function() {chrome.runtime.openOptionsPage();},
+            openOptions: function() {
+                chrome.runtime.openOptionsPage();
+                window.close();
+            },
             openDropdown: function(e) {
                 e.preventDefault();
                 var target = e.path.find(element => {
@@ -72,6 +84,12 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                 });
                 likePost($(target).attr('data-post-id'));
                 $(target).addClass('is-liked');
+            },
+            openPopup: function(e) {
+                e.preventDefault();
+                window.open(chrome.runtime.getURL('pages/popup.html?popup=1'),'das','location=no,links=no,scrollbars=no,toolbar=no');
+                window.close();
+                return;
             }
         },
         created: function() {

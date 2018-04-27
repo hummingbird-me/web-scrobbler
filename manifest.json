@@ -3,8 +3,8 @@
     "name": "__MSG_appName__",
     "description": "__MSG_appDesc__",
     "author": "Kitsu.io",
-    "version": "0.0.7",
-    "version_name": "7th draft",
+    "version": "0.0.8",
+    "version_name": "8th draft",
     "permissions": [
         "*://www.crunchyroll.com/*",
         "*://www.wakanim.tv/*",
@@ -20,7 +20,7 @@
     "background": {
         "scripts": ["node_modules/jquery/dist/jquery.min.js", "global.js", "runtime.js"]
     },
-    "content_security_policy": "script-src 'self' blob: filesystem: chrome-extension-resource: 'unsafe-eval'; object-src 'self' blob: filesystem:;",
+    "content_security_policy": "script-src 'self' blob: filesystem: 'unsafe-eval'; object-src 'self' blob: filesystem:;",
     "default_locale": "en",
     "browser_action": {
         "default_icon": "img/logo230.png",

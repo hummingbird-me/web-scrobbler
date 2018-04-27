@@ -22,8 +22,8 @@
   "homepage": "https://github.com/hummingbird-me/web-scrobbler#readme",
   "dependencies": {
     "clipboard": "^2.0.0",
+    "font-awesome": "^4.7.0",
     "jquery": "^3.2.1",
-    "jquery-inline-popup": "^1.0.2",
     "moment": "^2.22.1",
     "semantic-ui-progress": "^2.3.1",
     "vue": "^2.5.16"
