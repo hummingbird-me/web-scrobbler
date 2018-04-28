@@ -130,7 +130,7 @@
                                             </div>
                                             <div class="stream-item-activity">
                                                 <div id="ember1451" class="d-inline ember-view">
-                                                    <a @click="likePost" :data-post-id="post.post.id" href="#" class="like-stream-item" v-bind:class="{ 'is-liked': post.liked }">
+                                                    <a @click="likePost" :data-post-liked="post.liked" :data-post-id="post.post.id" href="#" class="like-stream-item" v-bind:class="{ 'is-liked': post.liked }">
                                                         <span class="heart-wrapper"></span>
                                                     </a>
                                                 </div>
@@ -145,10 +145,10 @@
                                                         </svg>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-right">
-                                                        <a href="#" @click="copyLink" class="dropdown-item copylink" :data-clipboard-text="'https://kitsu.io' + post.post.links.self">Copy Link to Post</a>
-                                                        <a href="#" @click="followPost" class="dropdown-item" :data-post-id="post.post.id">Follow Post</a>
-                                                        <a href="#" @click="pDefault" class="dropdown-item">Report Post</a>
-                                                        <a href="#" @click="pDefault" class="dropdown-item">Block @{{ post.user.attributes.name }}</a>
+                                                        <a href="#" @click="copyLink" class="dropdown-item copylink" :data-clipboard-text="'https://kitsu.io' + post.post.links.self">{{ trans('copyLink') }}</a>
+                                                        <a href="#" @click="followPost" class="dropdown-item" :data-post-id="post.post.id">{{ trans('followPost') }}</a>
+                                                        <a href="#" @click="pDefault" class="dropdown-item">{{ trans('reportPost') }}</a>
+                                                        <a href="#" @click="pDefault" class="dropdown-item">{{ trans('blockUser', '@' + post.user.attributes.name) }}</a>
                                                     </div>
                                                 </span>
                                             </div>
@@ -184,7 +184,7 @@
         
                                                         <span class="seperator"> · </span>
                                                         <small class="comment-reply">
-                                                            Reply
+                                                            {{ trans('replyComment') }}
                                                         </small>
         
                                                         <a :href="'https://kitsu.io' + comment.links.self">
@@ -203,11 +203,11 @@
                                                                 </a>
                                                                 <div class="dropdown-menu">
                                                                     <a href="#" @click="copyLink" :data-clipboard-text="'https://kitsu.io' + comment.links.self" class="dropdown-item">
-                                                                        Copy Link to Comment
+                                                                        {{ trans('copyLinkComment') }}
                                                                     </a>
         
-                                                                    <a href="#" class="dropdown-item">Report Comment</a>
-                                                                    <a href="#" class="dropdown-item">Block @Hakudamashi</a>
+                                                                    <a href="#" class="dropdown-item">{{ trans('reportComment') }}</a>
+                                                                    <a href="#" class="dropdown-item">{{ trans('blockUser', '@' + comment.author.attributes.name) }}</a>
                                                                 </div>
                                                             </span>
                                                         </div>
@@ -230,7 +230,7 @@
             <div class="wip-warn">
                     <img src="../img/wip.png" class="img">
                     <p class="center">This extension is Work In Progress, except to see many bugs.
-                    You are using version {{ getVersion() }}, see <a href="https://github.com/hummingbird-me/web-scrobbler">GitHub repository</a> for changelog.</p>
+                    You are using version {{ getVersion() }}, see <a target="_blank" href="https://github.com/hummingbird-me/web-scrobbler">GitHub repository</a> for changelog.</p>
             </div>
             <div class="content">
                 <a href="#" @click="openOptions">{{ trans('settings') }}</a>

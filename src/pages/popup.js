@@ -14,6 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* global moment, ClipboardJS */
 if (new URL(document.location.href).searchParams.get('popup')) {
     $('body').css('width', 'auto');
     $('.header .right').remove();
@@ -27,8 +28,8 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
             scrobbling: scrobbling
         },
         methods: {
-            trans: function(id) {
-                return chrome.i18n.getMessage(id);
+            trans: function(id, ...args) {
+                return chrome.i18n.getMessage(id, args);
             },
             mjsnow: function(date) {
                 return moment(date).fromNow();
@@ -47,10 +48,8 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
             },
             scrobbleNow: function(cevent) {
                 chrome.runtime.sendMessage({action: 'scrobbleNow'}, function(response) {
-                    console.log('scrobbled');
-                    // console.log(this);
                     $(cevent.target).remove();
-                    // TODO : fix : vm.scrobbling.notice = chrome.i18n.getMessage('scrobbled');
+                    this.scrobbling.notice = chrome.i18n.getMessage('scrobbled');
                 });
             },
             openOptions: function() {
@@ -82,8 +81,14 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                 var target = e.path.find(element => {
                     return element.nodeName === 'A';
                 });
-                likePost($(target).attr('data-post-id'));
-                $(target).addClass('is-liked');
+                if ($(target).attr('data-post-liked') === 'true') {
+                    unlikePost($(target).attr('data-post-id'));
+                    $(target).attr('data-post-liked', 'false');
+                } else {
+                    likePost($(target).attr('data-post-id'));
+                    $(target).attr('data-post-liked', 'true');
+                }
+                $(target).toggleClass('is-liked');
             },
             openPopup: function(e) {
                 e.preventDefault();
@@ -97,7 +102,18 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                 total: scrobbling.animeData.attributes.episodeCount
             });
             $('.progress').progress('set progress', scrobbling.progress);
-            var clipboard = new ClipboardJS('.copylink');
+            new ClipboardJS('.copylink');
         }
     });
 });
+
+var refreshInterval = setInterval(function() {
+    chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
+        vm.scrobbling = scrobbling;
+        $('.progress').progress({
+            total: scrobbling.animeData.attributes.episodeCount
+        });
+        $('.progress').progress('set progress', scrobbling.progress);
+        new ClipboardJS('.copylink');
+    });
+}, 3500);

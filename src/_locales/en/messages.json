@@ -97,5 +97,38 @@
     },
     "post": {
         "message": "Post"
+    },
+    "copyLink": {
+        "message": "Copy Link to Post"
+    },
+    "followPost": {
+        "message": "Follow Post"
+    },
+    "unfollowPost": {
+        "message": "Unfollow Post"
+    },
+    "reportPost": {
+        "message": "Report Post"
+    },
+    "blockUser": {
+        "message": "Block $USER$",
+        "placeholders": {
+            "user": {
+                "content": "$1",
+                "example": "@leonekmi :)"
+            }
+        }
+    },
+    "replyComment": {
+        "message": "Reply"
+    },
+    "copyLinkComment": {
+        "message": "Copy Link to Comment"
+    },
+    "reportComment": {
+        "message": "Report Comment"
+    },
+    "leaveComment": {
+        "message": "Leave a comment..."
     }
 }

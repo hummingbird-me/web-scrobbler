@@ -1,22 +1,24 @@
 module.exports = {
     "env": {
         "webextensions": true,
-        "browser": true
+        "browser": true,
+        "es6": true
     },
     "globals": {
         "$": true,
-        "scrobbleAnime": false,
         "retrieveWindowVariables": false,
-        "getAnimeProgressHelper": false,
+        "getCredentials": false,
+        "doAPIRequest": false,
         "getAnimeProgress": false,
-        "getTitlePreferencesHelper": false,
-        "getTitlePreferences": false,
-        "promptAnime": false,
-        "buildCache": false,
-        "getCacheEntry": false,
-        "setCacheEntry": false,
-        "chooseAnime": false,
-        "initScrobble": false
+        "followPost": false,
+        "likePost": false,
+        "unlikePost": false,
+        "postFeed": false,
+        "scrobbleAnime": false,
+        "getFeed": false,
+        "Timer": false,
+        "initScrobble": false,
+        "Vue": false
     },
     "extends": "eslint:recommended",
     "rules": {

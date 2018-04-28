@@ -43,11 +43,13 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                             return chrome.i18n.getMessage(str);
                         },
                         post: function(e) {
+                            e.preventDefault();
                             postFeed(scrobbling.animeData.id, scrobbling.episode, {
                                 text: $('textarea').val(),
                                 spoiler: $('#spoiler').prop('checked'),
                                 nsfw: $('#nsfw').prop('checked')
                             }).then(r => {
+                                if (!r.ok) throw new Error('An error has occured. Please retry later.');
                                 window.close();
                             });
                         }

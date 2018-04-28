@@ -1,6 +1,6 @@
 var gulp = require('gulp'),
     minify = require('gulp-minify'),
-    html = require('gulp-html-beautify'),
+    html = require('gulp-htmlmin'),
     css = require('gulp-clean-css'),
     zip = require('gulp-zip'),
     crx = require('gulp-crx-pack'),
@@ -25,16 +25,27 @@ gulp.task('copy', () => {
         .pipe(gulp.dest('build/img'));
     gulp.src('src/_locales/**')
         .pipe(gulp.dest('build/_locales'));
-    gulp.src('node_modules/**')
-        .pipe(gulp.dest('build/node_modules'));
+    gulp.src(['./node_modules/vue/**/*',
+        './node_modules/clipboard/**/*',
+        './node_modules/jquery/**/*',
+        './node_modules/moment/**/*',
+        './node_modules/semantic-ui-progress/**/*',
+        './node_modules/font-awesome/**/*'], {base: './'})
+        .pipe(gulp.dest('./build/'));
     return gulp.src('src/manifest.json')
         .pipe(gulp.dest('build'));
+});
+
+// Init workspace -- loading unpacked without this will make the extension crash
+gulp.task('copy-devel', () => {
+    return gulp.src('node_modules/**')
+        .pipe(gulp.dest('src/node_modules'));
 });
 
 // html
 gulp.task('html', () => {
     return gulp.src('src/pages/*.html')
-        .pipe(html())
+        .pipe(html({collapseWhitespace: true}))
         .pipe(gulp.dest('build/pages'));
 });
 
@@ -104,4 +115,5 @@ gulp.task('zip/crx/xpi', ['copy', 'html', 'css', 'js'], () => {
 
 gulp.task('default', ['clean'], () => {
     gulp.start('zip/crx/xpi');
+    return true;
 });

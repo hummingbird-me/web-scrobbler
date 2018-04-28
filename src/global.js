@@ -16,14 +16,21 @@ Global helpers file
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
+/*eslint no-unused-vars: "off"*/
+/*global scrobbling, mainTimer*/
 
+/**
+ * Retrieve actual window variables
+ * @param {Array} variables Set of variables to retrieve
+ * @returns {Array} Set of variables
+ */
 function retrieveWindowVariables(variables) {
     var ret = {};
 
     var scriptContent = '';
     for (var i = 0; i < variables.length; i++) {
         var currVariable = variables[i];
-        scriptContent += 'if (typeof ' + currVariable + ' !== \'undefined\') $(\'body\').attr(\'tmp_' + currVariable + '\', ' + currVariable + ');\n'
+        scriptContent += 'if (typeof ' + currVariable + ' !== \'undefined\') $(\'body\').attr(\'tmp_' + currVariable + '\', ' + currVariable + ');\n';
     }
 
     var script = document.createElement('script');
@@ -31,8 +38,8 @@ function retrieveWindowVariables(variables) {
     script.appendChild(document.createTextNode(scriptContent));
     (document.body || document.head || document.documentElement).appendChild(script);
 
-    for (var i = 0; i < variables.length; i++) {
-        var currVariable = variables[i];
+    for (i = 0; i < variables.length; i++) {
+        currVariable = variables[i];
         ret[currVariable] = $('body').attr('tmp_' + currVariable);
         $('body').removeAttr('tmp_' + currVariable);
     }
@@ -43,17 +50,25 @@ function retrieveWindowVariables(variables) {
 }
 
 if (!String.prototype.format) {
+    /**
+     * format string (like C++)
+     * @param {String} str strings to parse
+     */
     String.prototype.format = function() {
-      var args = arguments;
-      return this.replace(/{(\d+)}/g, function(match, number) { 
-        return typeof args[number] != 'undefined'
-          ? args[number]
-          : match
-        ;
-      });
+        var args = arguments;
+        return this.replace(/{(\d+)}/g, function(match, number) { 
+            return typeof args[number] != 'undefined'
+                ? args[number]
+                : match
+            ;
+        });
     };
-  }
+}
 
+/**
+ * Get Credentials
+ * @returns {Promise} {atoken, uid}
+ */
 function getCredentials() {
     return new Promise((resolve, reject) => {
         chrome.storage.local.get(['atoken', 'uid'], function (items) {
@@ -90,6 +105,11 @@ function doAPIRequest(endpoint, options) {
     });
 }
 
+/**
+ * Get anime progress by its id
+ * @param {Number} animeId id of the anime
+ * @returns {Promise} {Number} progress
+ */
 function getAnimeProgress(animeId) {
     return new Promise(resolve => {
         getCredentials().then(function(userdata) {
@@ -118,6 +138,11 @@ function getAnimeProgress(animeId) {
     });
 }
 
+/**
+ * Follow the post
+ * @param {Number} postid ID of the Post
+ * @returns {Promise} {Number} ID of the Post Follow
+ */
 function followPost(postid) {
     return new Promise((resolve, reject) => {
         getCredentials().then(userdata => {
@@ -140,7 +165,7 @@ function followPost(postid) {
                     type: 'post-follows'
                 }
             })}).then(json => {
-                resolve(json.data.id)
+                resolve(json.data.id);
             }).catch(reason => {
                 reject(reason);
             });
@@ -148,6 +173,11 @@ function followPost(postid) {
     });
 }
 
+/**
+ * Like a post by its ID
+ * @param {Number} postId ID of the Post
+ * @returns {Promise} {Number} ID of the Post Like
+ */
 function likePost(postId) {
     return new Promise((resolve, reject) => {
         getCredentials().then(userdata => {
@@ -170,7 +200,7 @@ function likePost(postId) {
                     type: 'post-likes'
                 }
             })}).then(json => {
-                resolve(json.data.id)
+                resolve(json.data.id);
             }).catch(reason => {
                 reject(reason);
             });
@@ -178,6 +208,31 @@ function likePost(postId) {
     });
 }
 
+/**
+ * Remove the like of a post by its id
+ * @param {Number} postId ID of the post
+ * @returns {Promise} true
+ * @throws {Promise} fetch failed
+ */
+function unlikePost(postId) {
+    return new Promise((resolve, reject) => {
+        getCredentials().then((userdata) => {
+            doAPIRequest('api/edge/post-likes?filter%5BpostId%5D={0}&filter%5BuserId%5D={1}'.format(postId, userdata.uid), {method: 'GET'}).then(result => {
+                if (result.meta.count == 0) resolve(true);
+                else doAPIRequest('api/edge/post-likes/{0}'.format(result.data[0].id), {method: 'DELETE'}).then(r => {
+                    if (r.ok) resolve(true); else reject({error: 'fetchf'});
+                });
+            });
+        });
+    });
+}
+
+/**
+ * Post in episode feed
+ * @param {Number} animeId ID of the anime
+ * @param {Number} episode Episode number
+ * @param {Object} content {text: '', spoiler: bool, nsfw: bool}
+ */
 function postFeed(animeId, episode, content) {
     return new Promise((resolve, reject) => {
         getCredentials().then(userdata => {
@@ -234,7 +289,7 @@ function postFeed(animeId, episode, content) {
                                         }
                                     }
                                 })
-                            }
+                            };
                         
                         fetch(url2, options2).then(response => {
                             if (response.ok) {
@@ -242,7 +297,7 @@ function postFeed(animeId, episode, content) {
                             } else {
                                 reject({error: 'fetchf'});
                             }
-                        })
+                        });
                     }
                 });
             });
@@ -250,6 +305,11 @@ function postFeed(animeId, episode, content) {
     });
 }
 
+/**
+ * Update/Create library entry (scrobble)
+ * @param {Number} animeId ID of the anime
+ * @param {Number} episode Episode number
+ */
 function scrobbleAnime(animeId, episode) {
     getCredentials().then(function (userdata) {
         console.log({animeId: animeId, episode: episode, event: 'scrobbling !'});
@@ -261,12 +321,12 @@ function scrobbleAnime(animeId, episode) {
                     'Accept': 'application/vnd.api+json',
                     'Authorization': 'Bearer ' + userdata.atoken,
                 }
-            }
+            };
 
         fetch(url, options).then(function(response) {
             response.json().then(function(json) {
                 if (json.data.length == 0) {
-                    url2 = 'https://kitsu.io/api/edge/library-entries';
+                    var url2 = 'https://kitsu.io/api/edge/library-entries';
                     options.method = 'POST',
                     options.body = JSON.stringify({
                         data: {
@@ -294,6 +354,7 @@ function scrobbleAnime(animeId, episode) {
                 } else {
                     url2 = 'https://kitsu.io/api/edge/library-entries/' + json.data[0].id;
                     options.method = 'PATCH';
+                    var rewatch, rewatchCount;
                     if (json.data[0].attributes.status == 'completed') {
                         rewatch = true;
                         rewatchCount = json.data[0].attributes.reconsumeCount + 1;
@@ -323,7 +384,7 @@ function scrobbleAnime(animeId, episode) {
                 }).catch(function(error) {
                     console.error(error);
                 });
-            })
+            });
         }).catch(function(error) {
             console.error(error);
         });
@@ -342,7 +403,7 @@ function parseFeedResult(jsondata) {
         getCredentials().then(userdata => {
             var comments = [];
             var posts = [];
-            for (i = 0; i < jsondata.data.length; i++) {
+            for (var i = 0; i < jsondata.data.length; i++) {
                 jsondata.data[i].activity = jsondata.included.find(element => {
                     return (element.type == 'activities' && element.id == jsondata.data[i].relationships.activities.data[0].id);
                 });
@@ -393,12 +454,12 @@ function parseFeedResult(jsondata) {
                 }
             }
             for (i = 0; i < comments.length; i++) {
-                for (ii = 0; ii < posts.length; ii++) {
+                for (var ii = 0; ii < posts.length; ii++) {
                     console.log({post: posts[ii], comment: comments[i], iteration: i, iteration2: ii});
                     if (comments[i].post.id == posts[ii].post.id) {
                         console.log('match !');
                         // avoid Converting circular structure to JSON
-                        comment = comments[i].comment;
+                        var comment = comments[i].comment;
                         console.log(comment);
                         posts[ii].comments.push(comment);
                     }
@@ -410,6 +471,11 @@ function parseFeedResult(jsondata) {
     });
 }
 
+/**
+ * Obtain feed of an episode
+ * @param {Number} animeId ID of the anime
+ * @param {Number} episode Episode number
+ */
 function getFeed(animeId, episode) {
     return new Promise(resolve => {
         doAPIRequest('api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D={0}&page%5Boffset%5D={1}&page%5Blimit%5D=1'.format(animeId, (parseInt(episode)) - 1), {method: 'GET'}).then(jsondata => {
@@ -429,7 +495,12 @@ function getFeed(animeId, episode) {
     });
 }
 
-/* Timer class */
+/**
+ * Timer class
+ * @param {Function} callback callback at the end of the timer 
+ * @param {Number} delay delay in milliseconds
+ * @param {any} params Params of callback
+ */
 function Timer(callback, delay, ...params) {
     var timerId, start, paused;
     var remaining = delay;
@@ -456,6 +527,12 @@ function Timer(callback, delay, ...params) {
     this.resume();
 }
 
+/**
+ * initScrobble alias
+ * @param {String} series_title Title of the series
+ * @param {Number} episode_number Number of the episode
+ * @param {Function} prepend_message Function to prepend a message on the page
+ */
 function initScrobble(series_title, episode_number, prepend_message) {
     chrome.runtime.sendMessage({action: 'initScrobble', series_title: series_title, episode_number: episode_number, prepend_message: prepend_message});
 }

@@ -14,6 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* exported vm */
 var vm = new Vue({
     el: '.container',
     methods: {
@@ -21,8 +22,6 @@ var vm = new Vue({
             return chrome.i18n.getMessage(id);
         },
         submitLogin: function(e) {
-            console.log('ésalu !');
-
             var url = 'https://kitsu.io/api/oauth/token',
                 options = {
                     method: 'POST',
