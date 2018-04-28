@@ -1,4 +1,4 @@
-/*
+/*!
     This file is part of Kitsu Web Scrobbler.
 
     Kitsu Web Scrobbler is free software: you can redistribute it and/or modify

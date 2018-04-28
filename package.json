@@ -27,5 +27,14 @@
     "moment": "^2.22.1",
     "semantic-ui-progress": "^2.3.1",
     "vue": "^2.5.16"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.4.0",
+    "gulp-clean-css": "^3.9.3",
+    "gulp-crx-pack": "^1.0.2",
+    "gulp-html-beautify": "^1.0.1",
+    "gulp-minify": "^2.1.0",
+    "gulp-zip": "^4.1.0"
   }
 }

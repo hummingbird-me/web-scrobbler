@@ -1,4 +1,4 @@
-/*
+/*!
 Main runtime
 
     This file is part of Kitsu Web Scrobbler.

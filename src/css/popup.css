@@ -1,4 +1,4 @@
-/*
+/*!
     This file is part of Kitsu Web Scrobbler.
 
     Kitsu Web Scrobbler is free software: you can redistribute it and/or modify
@@ -41,6 +41,9 @@ img {
 
 .wip-warn {
     border-left: 0.5em solid orange;
+    border-top: 1px solid orange;
+    border-right: 1px solid orange;
+    border-bottom: 1px solid orange;
     background-color: #ebcead;
     margin: 1em;
     padding: 0.5em 1em;

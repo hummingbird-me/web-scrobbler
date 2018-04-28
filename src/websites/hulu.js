@@ -1,5 +1,5 @@
-/*
-Get Metadata from an episode of animedigitalnetwork.fr
+/*!
+Get Metadata from an episode of hulu.com
 
     This file is part of Kitsu Web Scrobbler.
 
@@ -18,25 +18,33 @@ Get Metadata from an episode of animedigitalnetwork.fr
 */
 
 function message() {
-    $('.adn-big-title h1 span').append('<span id="anilist_scrobbler_notice">Anilist Scrobbler : ' + chrome.i18n.getMessage('starting') + '</span></li>');
+    $('h1.video-titles').append('<span id="anilist_scrobbler_notice" style="font-family: Flama; font-size: 15px;">Anilist Scrobbler : ' + chrome.i18n.getMessage('starting') + '</span>');
     return true;
 }
 
 function main() {
-    var regex = /http:\/\/animedigitalnetwork.fr\/video\/([a-zA-Z0-9-]+)\/([a-zA-Z0-9-]+)/;
+    var regex = /https:\/\/www.hulu.com\/watch\/([0-9]+)/;
+
     if (regex.test(document.documentURI)) {
-        var series_title = $('.adn-big-title h1 a').text().replace('Nouvelle Saison', '');
-        var episode_number = $('.current .adn-playlist-block a').attr('title').replace('Épisode ', '');
+        var title = $('title').text();
+        var regex1 = /Watch\s*(.*?)\s*Season/g;
+        var regex2 = /Episode\s*(.*?)\s*\| Hulu/g;
+        var series_title = regex1.exec(title)[1];
+        var episode_number = regex2.exec(title)[1];
         initScrobble(series_title, episode_number, message);
     }
 }
 
 $(window).on('load', function() {
     chrome.storage.sync.get({
-        ignore_adn: false
+        ignore_hulu: false
     }, function(items) {
-        if (items.ignore_adn == false) {
+        if (items.ignore_hulu == false) {
             main();
+            $('title').bind('DOMSubtreeModified', function() {
+                $('h1.video-titles #anilist').remove();
+                main();
+            });
         }
     });
 });

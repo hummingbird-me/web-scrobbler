@@ -1,4 +1,4 @@
-/*
+/*!
 Get Metadata from an episode of Crunchyroll
 
     This file is part of Kitsu Web Scrobbler.

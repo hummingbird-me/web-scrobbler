@@ -1,5 +1,5 @@
-/*
-Get Metadata from an episode of Wakanim.tv
+/*!
+Get Metadata from an episode of animedigitalnetwork.fr
 
     This file is part of Kitsu Web Scrobbler.
 
@@ -18,25 +18,24 @@ Get Metadata from an episode of Wakanim.tv
 */
 
 function message() {
-    $('.border-list').prepend('<li class="border-list_item"><span class="border-list_title">Anilist Scrobbler</span><span id="anilist_scrobbler_notice" class="border-list_text">' + chrome.i18n.getMessage('starting') + '</span></li>');
+    $('.adn-big-title h1 span').append('<span id="anilist_scrobbler_notice">Anilist Scrobbler : ' + chrome.i18n.getMessage('starting') + '</span></li>');
     return true;
 }
 
 function main() {
-    var regex = /https:\/\/www.wakanim.tv\/fr\/v2\/catalogue\/episode\/([a-zA-Z0-9-]+)\/([a-zA-Z0-9-]+)/;
-
+    var regex = /http:\/\/animedigitalnetwork.fr\/video\/([a-zA-Z0-9-]+)\/([a-zA-Z0-9-]+)/;
     if (regex.test(document.documentURI)) {
-        var series_title = $('.episode_title').text();
-        var episode_number = $('.episode_subtitle span span').text();
+        var series_title = $('.adn-big-title h1 a').text().replace('Nouvelle Saison', '');
+        var episode_number = $('.current .adn-playlist-block a').attr('title').replace('Épisode ', '');
         initScrobble(series_title, episode_number, message);
     }
 }
 
 $(window).on('load', function() {
     chrome.storage.sync.get({
-        ignore_wk: false
+        ignore_adn: false
     }, function(items) {
-        if (items.ignore_wk == false) {
+        if (items.ignore_adn == false) {
             main();
         }
     });

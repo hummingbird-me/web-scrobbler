@@ -1,4 +1,4 @@
-/*
+/*!
 Global helpers file
 
     This file is part of Kitsu Web Scrobbler.

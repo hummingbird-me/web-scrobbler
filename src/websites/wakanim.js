@@ -1,5 +1,5 @@
-/*
-Get Metadata from an episode of hulu.com
+/*!
+Get Metadata from an episode of Wakanim.tv
 
     This file is part of Kitsu Web Scrobbler.
 
@@ -18,33 +18,26 @@ Get Metadata from an episode of hulu.com
 */
 
 function message() {
-    $('h1.video-titles').append('<span id="anilist_scrobbler_notice" style="font-family: Flama; font-size: 15px;">Anilist Scrobbler : ' + chrome.i18n.getMessage('starting') + '</span>');
+    $('.border-list').prepend('<li class="border-list_item"><span class="border-list_title">Anilist Scrobbler</span><span id="anilist_scrobbler_notice" class="border-list_text">' + chrome.i18n.getMessage('starting') + '</span></li>');
     return true;
 }
 
 function main() {
-    var regex = /https:\/\/www.hulu.com\/watch\/([0-9]+)/;
+    var regex = /https:\/\/www.wakanim.tv\/fr\/v2\/catalogue\/episode\/([a-zA-Z0-9-]+)\/([a-zA-Z0-9-]+)/;
 
     if (regex.test(document.documentURI)) {
-        var title = $('title').text();
-        var regex1 = /Watch\s*(.*?)\s*Season/g;
-        var regex2 = /Episode\s*(.*?)\s*\| Hulu/g;
-        var series_title = regex1.exec(title)[1];
-        var episode_number = regex2.exec(title)[1];
+        var series_title = $('.episode_title').text();
+        var episode_number = $('.episode_subtitle span span').text();
         initScrobble(series_title, episode_number, message);
     }
 }
 
 $(window).on('load', function() {
     chrome.storage.sync.get({
-        ignore_hulu: false
+        ignore_wk: false
     }, function(items) {
-        if (items.ignore_hulu == false) {
+        if (items.ignore_wk == false) {
             main();
-            $('title').bind('DOMSubtreeModified', function() {
-                $('h1.video-titles #anilist').remove();
-                main();
-            });
         }
     });
 });
