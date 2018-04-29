@@ -1,0 +1,467 @@
+/*!
+    This file is part of Kitsu Web Scrobbler.
+
+    Kitsu Web Scrobbler is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Kitsu Web Scrobbler is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+body {
+    margin: 0;
+    font-family: Asap, Helvetica, sans-serif;
+}
+
+/*! CSS Used from: https://kitsu.io/assets/light-eee8409645799cd2df675e13594459d7.css */
+a {
+    background-color: transparent;
+}
+
+a:active,
+a:hover {
+    outline-width: 0;
+}
+
+small {
+    font-size: 80%;
+}
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button,
+input {
+    overflow: visible;
+}
+
+button,
+input {
+    margin: 0;
+}
+
+button {
+    text-transform: none;
+}
+
+button,
+[type="submit"] {
+    cursor: pointer;
+}
+
+[disabled] {
+    cursor: default;
+}
+
+button,
+[type="submit"] {
+    -webkit-appearance: button;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+button:-moz-focusring,
+input:-moz-focusring {
+    outline: 1px dotted ButtonText;
+}
+
+@media print {
+    *,
+    *::before,
+    *::after,
+    *::first-letter,
+    *::first-line {
+        text-shadow: none !important;
+        box-shadow: none !important;
+    }
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+    p {
+        orphans: 3;
+        widows: 3;
+    }
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+h6 {
+    margin-top: 0;
+    margin-bottom: .5rem;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+a {
+    color: #0275d8;
+    text-decoration: none;
+}
+
+a:focus,
+a:hover {
+    color: #014c8c;
+    text-decoration: underline;
+}
+
+a:focus {
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+a,
+button,
+input {
+    touch-action: manipulation;
+}
+
+button:focus {
+    outline: 1px dotted;
+    outline: 5px auto -webkit-focus-ring-color;
+}
+
+input,
+button {
+    margin: 0;
+    line-height: inherit;
+    border-radius: 0;
+}
+
+h6 {
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.1;
+    color: inherit;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+small {
+    font-size: 80%;
+    font-weight: normal;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #55595c;
+    background-color: #fff;
+    background-image: none;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+}
+
+.form-control::-ms-expand {
+    background-color: transparent;
+    border: 0;
+}
+
+.form-control:focus {
+    color: #55595c;
+    background-color: #fff;
+    border-color: #66afe9;
+    outline: none;
+}
+
+.form-control:-ms-input-placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.form-control::-ms-input-placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.form-control::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+.form-control:disabled {
+    background-color: #eceeef;
+    opacity: 1;
+}
+
+.form-control:disabled {
+    cursor: not-allowed;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.btn,
+.button {
+    display: inline-block;
+    font-weight: normal;
+    line-height: 1.25;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+}
+
+.btn:focus,
+.button:focus,
+.btn:active:focus,
+.button:active:focus {
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+.btn:focus,
+.button:focus,
+.btn:hover,
+.button:hover {
+    text-decoration: none;
+}
+
+.btn:active,
+.button:active {
+    background-image: none;
+    outline: 0;
+}
+
+.btn:disabled,
+.button:disabled {
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+:focus {
+    outline-color: transparent;
+    outline-style: none;
+}
+
+[data-ember-action]:not(:disabled) {
+    cursor: pointer;
+}
+
+h6 {
+    font-family: "Asap", sans-serif;
+    font-weight: 700;
+}
+
+p {
+    font-family: "Open Sans", sans-serif;
+}
+
+a {
+    color: #f75239;
+    text-decoration: none;
+    font-family: "Asap", sans-serif;
+}
+
+a:hover,
+a:visited:hover {
+    color: #f3290a;
+}
+
+.modal-content input {
+    width: 100%;
+    border: 1px solid #e5e5e5;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.modal-wrapper {
+    padding: 20px;
+    padding-top: 5px;
+}
+
+#auth-modal .modal-wrapper {
+    padding: 30px;
+}
+
+.modal-actions svg {
+    fill: #FFF;
+}
+
+.modal-actions .svgIcon {
+    vertical-align: middle;
+    padding-right: 8px;
+    top: 4px;
+    position: relative;
+}
+
+.modal-actions .button {
+    width: 100%;
+    height: 58px;
+    border-radius: 2px;
+    font-size: 16px;
+    text-align: left;
+    padding-left: 18px;
+    color: #FFF;
+    font-family: "Open Sans", sans-serif;
+    margin-bottom: 10px;
+}
+
+.modal-actions .button-labelSet {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.modal-actions .button-label--multiLine {
+    display: block;
+    line-height: 16px;
+}
+
+.modal-actions.login-actions {
+    text-align: center;
+}
+
+.modal-actions.login-actions .button {
+    width: 50%;
+    height: auto;
+    font-size: 13px;
+    display: inline-block;
+}
+
+@media (max-width: 543px) {
+    .modal-actions.login-actions .button {
+        width: 100%;
+    }
+}
+
+.modal-actions.login-actions .button-label--multiLine {
+    display: block;
+    line-height: 29px;
+}
+
+.modal-actions.login-actions .forgot-pass-link {
+    font-size: 12px;
+    float: right;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.modal-actions .email-login {
+    margin-top: 10px;
+}
+
+.modal-actions .email-login input {
+    border-radius: 0;
+    outline: none;
+}
+
+.modal-actions .email-login input:focus {
+    border-color: #EEE;
+}
+
+.modal-actions .email-login .username {
+    border-bottom: none;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.modal-actions .email-login .password {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.auth-section {
+    opacity: .4;
+}
+
+.auth-section.active {
+    opacity: 1;
+}
+
+.auth-section .auth-section-title {
+    margin-bottom: 10px;
+}
+
+.auth-section .auth-section-helper {
+    font-size: 14px;
+}
+
+.form-cta button {
+    width: 100%;
+    padding: 15px;
+    font-family: "Asap", sans-serif;
+}
+
+.form-cta button:disabled {
+    border: 1px solid #B4B4B4;
+    color: #464646;
+    background: transparent;
+}
+
+.button {
+    font-family: "Asap", sans-serif;
+    letter-spacing: .05em;
+    transition: all .2s ease;
+}
+
+.button--primary {
+    background-color: #16a085;
+    color: #FFF;
+    padding: 10px 60px;
+    box-shadow: 0 0 0px transparent;
+}
+
+.button--primary:hover {
+    background: #19b698;
+    color: #FFF !important;
+}
+
+.button--primary:disabled {
+    background: #B4B4B4;
+    opacity: 1;
+}
+
+.button--facebook {
+    background-color: #3b5998;
+    color: #fff;
+    fill: #fff;
+    display: inline-flex;
+    align-items: center;
+}
+
+.button--facebook svg {
+    margin-right: 10px;
+}

@@ -5,4 +5,4 @@ before_script:
   - npm install -g gulp-cli eslint
 script:
   - gulp
-  - eslint src/
+  - eslint src/*.js src/pages/*.js src/websites/*

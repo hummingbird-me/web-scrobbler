@@ -24,7 +24,7 @@
         "message": "You are now connected to Kitsu !"
     },
     "loginError": {
-        "message": "Bad login"
+        "message": "The provided credentials are incorrect."
     },
     "animeProgress": {
         "message": "Progress"
