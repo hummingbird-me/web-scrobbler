@@ -119,6 +119,15 @@
             }
         }
     },
+    "unblockUser": {
+        "message": "Unblock $USER$",
+        "placeholders": {
+            "user": {
+                "content": "$1",
+                "example": "@leonekmi :)"
+            }
+        }
+    },
     "replyComment": {
         "message": "Reply"
     },

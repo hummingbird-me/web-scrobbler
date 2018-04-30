@@ -74,7 +74,15 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
             },
             followPost: function(e) {
                 e.preventDefault();
-                followPost($(e.target).attr('data-post-id'));
+                if ($(e.target).attr('data-followed')) {
+                    unfollowPost($(e.target).attr('data-post-id'));
+                    $(e.target).removeAttr('data-followed');
+                    $(e.target).text(chrome.i18n.getMessage('followPost'));
+                } else {
+                    followPost($(e.target).attr('data-post-id'));
+                    $(e.target).attr('data-followed', 'true');
+                    $(e.target).text(chrome.i18n.getMessage('unfollowPost'));
+                }
                 $(e.target).parent().parent().toggleClass('open');
             },
             likePost: function(e) {
@@ -88,6 +96,20 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                 } else {
                     likePost($(target).attr('data-post-id'));
                     $(target).attr('data-post-liked', 'true');
+                }
+                $(target).toggleClass('is-liked');
+            },
+            likeComment: function(e) {
+                e.preventDefault();
+                var target = e.path.find(element => {
+                    return element.nodeName === 'A';
+                });
+                if ($(target).attr('data-comment-liked') === 'true') {
+                    unlikeComment($(target).attr('data-comment-id'));
+                    $(target).attr('data-comment-liked', 'false');
+                } else {
+                    likeComment($(target).attr('data-comment-id'));
+                    $(target).attr('data-comment-liked', 'true');
                 }
                 $(target).toggleClass('is-liked');
             },
