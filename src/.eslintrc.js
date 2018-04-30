@@ -6,6 +6,7 @@ module.exports = {
     },
     "globals": {
         "$": true,
+        "jQuery": false,
         "retrieveWindowVariables": false,
         "getCredentials": false,
         "doAPIRequest": false,

@@ -14,6 +14,8 @@
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* exported vm 
+    --> for debugging Vue in the console */
 var vm;
 chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
     if (!scrobbling.error) {

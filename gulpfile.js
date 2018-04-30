@@ -5,6 +5,7 @@ var gulp = require('gulp'),
     zip = require('gulp-zip'),
     crx = require('gulp-crx-pack'),
     clean = require('gulp-clean'),
+    eslint = require('gulp-eslint'),
     moment = require('moment');
 
 // clean build folder
@@ -90,6 +91,12 @@ gulp.task('js', () => {
         .pipe(gulp.dest('build'));
 });
 
+gulp.task('lint', () => {
+    return gulp.src(['src/*.js', 'src/pages/*.js', 'src/websites/*'])
+        .pipe(eslint())
+        .pipe(eslint.format('stylish', process.stdout))
+})
+
 // build and zip
 gulp.task('zip/crx/xpi', ['copy', 'html', 'css', 'js'], () => {
     var manifest = require('./src/manifest.json'),
@@ -113,7 +120,7 @@ gulp.task('zip/crx/xpi', ['copy', 'html', 'css', 'js'], () => {
         .pipe(gulp.dest('target'));
 });
 
-gulp.task('default', ['clean'], () => {
+gulp.task('default', ['clean', 'lint'], () => {
     gulp.start('zip/crx/xpi');
     return true;
 });

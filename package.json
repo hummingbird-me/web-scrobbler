@@ -33,6 +33,7 @@
     "gulp-clean": "^0.4.0",
     "gulp-clean-css": "^3.9.3",
     "gulp-crx-pack": "^1.0.2",
+    "gulp-eslint": "^4.0.2",
     "gulp-htmlmin": "^4.0.0",
     "gulp-minify": "^2.1.0",
     "gulp-zip": "^4.1.0"

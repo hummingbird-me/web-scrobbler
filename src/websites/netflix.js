@@ -34,9 +34,22 @@ function main() {
 
 jQuery.fn.exists = function() {
     return this.length > 0;
-}
+};
 
-function checkDOMChange2() {
+$(window).on('load', function() {
+    chrome.storage.sync.get({
+        ignore_nf: false
+    }, function(items) {
+        if (items.ignore_nf == false) {
+            main();
+            $('title').bind('DOMSubtreeModified', function() {
+                main();
+            });
+        }
+    });
+});
+
+/*function checkDOMChange2() {
     if ($('.player-status').exists()) {
         chrome.storage.sync.get({
             ignore_nf: false
@@ -75,7 +88,7 @@ function checkDOMChange() {
                         console.log("Click on a play on index");
                         setTimeout(checkDOMChange2, 550);
                     });
-                });*/
+                });*
                 main();
             }
         });
@@ -84,4 +97,4 @@ function checkDOMChange() {
     }
 }
 
-checkDOMChange();
+checkDOMChange();*/

@@ -48,6 +48,7 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
             },
             scrobbleNow: function(cevent) {
                 chrome.runtime.sendMessage({action: 'scrobbleNow'}, function(response) {
+                    if (!response) throw new Error('Runtime bad response');
                     $(cevent.target).remove();
                     this.scrobbling.notice = chrome.i18n.getMessage('scrobbled');
                 });
@@ -107,7 +108,7 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
     });
 });
 
-var refreshInterval = setInterval(function() {
+setInterval(function() {
     chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
         vm.scrobbling = scrobbling;
         $('.progress').progress({

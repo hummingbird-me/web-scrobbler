@@ -14,9 +14,11 @@
     You should have received a copy of the GNU General Public License
     along with Kitsu Web Scrobbler.  If not, see <http://www.gnu.org/licenses/>.
 */
+/* exported vm 
+    --> for debugging Vue in the console */
 if (new URL(document.location.href).searchParams.get('popup')) {
     $('body').css('width', 'auto');
-    $('.header a').attr('href', 'popup.html?popup=1')
+    $('.header a').attr('href', 'popup.html?popup=1');
 }
 var vm;
 chrome.runtime.sendMessage({action: 'getScrobbling'}, function(scrobbling) {
@@ -32,6 +34,7 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, function(scrobbling) {
             choose: function(event) {
                 event.preventDefault();
                 chrome.runtime.sendMessage({action: 'setScrobbling', id: $(event.target).attr('data-choose')}, function(res) {
+                    if (!res) throw new Error('Bad runtime response');
                     document.location = 'popup.html';
                 });
             }
