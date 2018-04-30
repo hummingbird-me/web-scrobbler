@@ -14,6 +14,12 @@
         "storage",
         "notifications"
     ],
+    "applications": {
+        "gecko": {
+          "id": "web-scrobbler@kitsu.io",
+          "strict_min_version": "42.0"
+        }
+    },
     "options_ui": {
         "page" : "pages/options.html"
     },

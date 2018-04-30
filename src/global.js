@@ -113,26 +113,12 @@ function doAPIRequest(endpoint, options) {
 function getAnimeProgress(animeId) {
     return new Promise(resolve => {
         getCredentials().then(function(userdata) {
-            var url = 'https://kitsu.io/api/edge/library-entries?filter[userId]=' + encodeURIComponent(userdata.uid) + '&filter[animeId]=' + encodeURIComponent(animeId),
-                options = {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/vnd.api+json',
-                        'Accept': 'application/vnd.api+json',
-                        'Authorization': 'Bearer ' + userdata.atoken,
-                    }
-                };
-
-            fetch(url, options).then(function(response) {
-                response.json().then(function(json) {
-                    if (json.data.length == 0) {
-                        resolve(0);
-                    } else {
-                        resolve(json.data[0].attributes.progress);
-                    }
-                });
-            }).catch(function(reason) {
-                resolve(false);
+            doAPIRequest('https://kitsu.io/api/edge/library-entries?filter[userId]={0}&filter[animeId]={1}'.format(encodeURIComponent(userdata.uid), encodeURIComponent(animeId)), {method: 'GET'}).then(json => {
+                if (json.data.length == 0) {
+                    resolve(0);
+                } else {
+                    resolve(json.data[0].attributes.progress);
+                }
             });
         });
     });
@@ -236,70 +222,43 @@ function unlikePost(postId) {
 function postFeed(animeId, episode, content) {
     return new Promise((resolve, reject) => {
         getCredentials().then(userdata => {
-            var url = 'https://kitsu.io/api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D=' + animeId + '&page%5Boffset%5D=' + (parseInt(episode) - 1) + '&page%5Blimit%5D=1',
-                options = {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/vnd.api+json',
-                        'Accept': 'application/vnd.api+json',
-                        'Authorization': 'Bearer ' + userdata.atoken,
-                    }
-                };
-    
-            fetch(url, options).then(response => {
-                response.json().then(jsondata => {
-                    if (jsondata.data.length === 0) {
-                        reject({error: 'noepfeed'});
-                    } else {
-                        var url2 = 'https://kitsu.io/api/edge/posts',
-                            options2 = {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/vnd.api+json',
-                                    'Accept': 'application/vnd.api+json',
-                                    'Authorization': 'Bearer ' + userdata.atoken,
-                                },
-                                body: JSON.stringify({
+            doAPIRequest('api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D={0}&page%5Boffset%5D={1}&page%5Blimit%5D=1'.format(animeId, (parseInt(episode) - 1)), {method: 'POST'}).then(jsondata => {
+                if (jsondata.data.length === 0) {
+                    reject({error: 'noepfeed'});
+                } else {
+                    doAPIRequest('api/edge/posts', {method: 'POST', body: JSON.stringify({
+                        data: {
+                            attributes: {
+                                content: content.text,
+                                spoiler: content.spoiler,
+                                nsfw: content.nsfw
+                            },
+                            type: 'posts',
+                            relationships: {
+                                media: {
                                     data: {
-                                        attributes: {
-                                            content: content.text,
-                                            spoiler: content.spoiler,
-                                            nsfw: content.nsfw
-                                        },
-                                        type: 'posts',
-                                        relationships: {
-                                            media: {
-                                                data: {
-                                                    type: 'anime',
-                                                    id: animeId
-                                                }
-                                            },
-                                            spoiledUnit: {
-                                                data: {
-                                                    type: 'episodes',
-                                                    id: jsondata.data[0].id
-                                                }
-                                            },
-                                            user: {
-                                                data: {
-                                                    type: 'users',
-                                                    id: userdata.uid
-                                                }
-                                            }
-                                        }
+                                        type: 'anime',
+                                        id: animeId
                                     }
-                                })
-                            };
-                        
-                        fetch(url2, options2).then(response => {
-                            if (response.ok) {
-                                resolve(response);
-                            } else {
-                                reject({error: 'fetchf'});
+                                },
+                                spoiledUnit: {
+                                    data: {
+                                        type: 'episodes',
+                                        id: jsondata.data[0].id
+                                    }
+                                },
+                                user: {
+                                    data: {
+                                        type: 'users',
+                                        id: userdata.uid
+                                    }
+                                }
                             }
-                        });
-                    }
-                });
+                        }
+                    })}).then(data => {
+                        resolve(data);
+                    });
+                }
             });
         });
     });
@@ -323,47 +282,46 @@ function scrobbleAnime(animeId, episode) {
                 }
             };
 
-        fetch(url, options).then(function(response) {
-            response.json().then(function(json) {
-                if (json.data.length == 0) {
-                    var url2 = 'https://kitsu.io/api/edge/library-entries';
-                    options.method = 'POST',
-                    options.body = JSON.stringify({
-                        data: {
-                            type: 'libraryEntries',
-                            attributes: {
-                                status: 'current',
-                                progress: episode
-                            },
-                            relationships: {
-                                anime: {
-                                    data: {
-                                        type: 'anime',
-                                        id: animeId
-                                    },
+        doAPIRequest('https://kitsu.io/api/edge/library-entries?filter[animeId]={0}&filter[userId]={1}'.format(encodeURIComponent(animeId), encodeURIComponent(userdata.uid)), {method: 'GET'}).then(json => {
+            if (json.data.length == 0) {
+                var url2 = 'https://kitsu.io/api/edge/library-entries';
+                options.method = 'POST',
+                options.body = JSON.stringify({
+                    data: {
+                        type: 'libraryEntries',
+                        attributes: {
+                            status: 'current',
+                            progress: episode
+                        },
+                        relationships: {
+                            anime: {
+                                data: {
+                                    type: 'anime',
+                                    id: animeId
                                 },
-                                user: {
-                                    data: {
-                                        type: 'users',
-                                        id: userdata.uid
-                                    }
+                            },
+                            user: {
+                                data: {
+                                    type: 'users',
+                                    id: userdata.uid
                                 }
                             }
                         }
-                    });
-                } else {
-                    url2 = 'https://kitsu.io/api/edge/library-entries/' + json.data[0].id;
-                    options.method = 'PATCH';
-                    var rewatch, rewatchCount;
-                    if (json.data[0].attributes.status == 'completed') {
-                        rewatch = true;
-                        rewatchCount = json.data[0].attributes.reconsumeCount + 1;
-                        console.log('Will mark as a rewatch');
-                    } else {
-                        rewatch = json.data[0].attributes.reconsuming;
-                        rewatchCount = json.data[0].attributes.reconsumeCount;
                     }
-                    options.body = JSON.stringify({
+                });
+            } else {
+                var rewatch, rewatchCount;
+                if (json.data[0].attributes.status == 'completed') {
+                    rewatch = true;
+                    rewatchCount = json.data[0].attributes.reconsumeCount + 1;
+                    console.log('Will mark as a rewatch');
+                } else {
+                    rewatch = json.data[0].attributes.reconsuming;
+                    rewatchCount = json.data[0].attributes.reconsumeCount;
+                }
+                var options = {
+                    body: JSON.stringify({
+                        method: 'PATCH',
                         data: {
                             id: json.data[0].id,
                             type: 'libraryEntries',
@@ -374,19 +332,15 @@ function scrobbleAnime(animeId, episode) {
                                 reconsumeCount: rewatchCount
                             }
                         }
-                    });
-                }
-                fetch(url2, options).then(function (response) {
+                    })
+                };
+                doAPIRequest('https://kitsu.io/api/edge/library-entries/{0}'.format(json.data[0].id), options).then(json => {
                     chrome.browserAction.setBadgeText({text: '+'});
                     chrome.browserAction.setBadgeBackgroundColor({color: '#167000'});
                     scrobbling.scrobbled = true;
                     mainTimer.pause();
-                }).catch(function(error) {
-                    console.error(error);
                 });
-            });
-        }).catch(function(error) {
-            console.error(error);
+            }
         });
     });
 }

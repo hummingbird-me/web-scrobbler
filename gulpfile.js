@@ -26,15 +26,15 @@ gulp.task('copy', () => {
         .pipe(gulp.dest('build/img'));
     gulp.src('src/_locales/**')
         .pipe(gulp.dest('build/_locales'));
-    gulp.src(['./node_modules/vue/**/*',
-        './node_modules/clipboard/**/*',
-        './node_modules/jquery/**/*',
-        './node_modules/moment/**/*',
-        './node_modules/semantic-ui-progress/**/*',
-        './node_modules/font-awesome/**/*'], {base: './'})
-        .pipe(gulp.dest('./build/'));
-    return gulp.src('src/manifest.json')
+    gulp.src('src/manifest.json')
         .pipe(gulp.dest('build'));
+    return gulp.src(['./node_modules/vue/**/*',
+    './node_modules/clipboard/**/*',
+    './node_modules/jquery/**/*',
+    './node_modules/moment/**/*',
+    './node_modules/semantic-ui-progress/**/*',
+    './node_modules/font-awesome/**/*'], {base: './'})
+    .pipe(gulp.dest('./build/'));
 });
 
 // Init workspace -- loading unpacked without this will make the extension crash
@@ -100,20 +100,18 @@ gulp.task('lint', () => {
 // build and zip
 gulp.task('zip/crx/xpi', ['copy', 'html', 'css', 'js'], () => {
     var manifest = require('./src/manifest.json'),
-        filename = 'Kitsu Web Scrobbler v' + manifest.version + ' ' + moment().format('D-MMM-YYYY-HH-MM');
+        filename = 'Kitsu Web Scrobbler v' + manifest.version + ' ' + moment().format('D-MMM-YYYY-HH-mm-ss');
 
     gulp.src('build/**')
         .pipe(zip(filename + '.zip'))
         .pipe(gulp.dest('target'));
 
-    gulp.src('build/**')
+    /*gulp.src('build/**')
         .pipe(crx({
             filename: filename + '.crx',
-            privateKey: null /* set private key here or it will not build
-            "openssl genrsa -out private.pem 2048" should works
-            */
+            privateKey: null // set private key here or it will not build"openssl genrsa -out private.pem 2048" should works
         }))
-        .pipe(gulp.dest('target'));
+        .pipe(gulp.dest('target'));*/
 
     return gulp.src('build/**')
         .pipe(zip(filename + '.xpi'))
