@@ -4,7 +4,10 @@
   "description": "Automatically tracks your episode progress on Kitsu when you stream anime from your browser.",
   "main": "none",
   "scripts": {
-    "test": "return true;"
+    "build": "scripty",
+    "clean": "scripty",
+    "clean:builds": "scripty",
+    "copydevel": "scripty"
   },
   "repository": {
     "type": "git",
@@ -36,6 +39,7 @@
     "gulp-eslint": "^4.0.2",
     "gulp-htmlmin": "^4.0.0",
     "gulp-minify": "^2.1.0",
-    "gulp-zip": "^4.1.0"
+    "gulp-zip": "^4.1.0",
+    "scripty": "^1.7.2"
   }
 }
