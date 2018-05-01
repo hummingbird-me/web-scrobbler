@@ -1,6 +1,6 @@
 {
   "name": "web-scrobbler",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Automatically tracks your episode progress on Kitsu when you stream anime from your browser.",
   "main": "none",
   "scripts": {

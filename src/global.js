@@ -278,6 +278,93 @@ function likeComment(commentId) {
 }
 
 /**
+ * Post a comment
+ * @param {Number} postId
+ * @param {String} content
+ */
+function postComment(postId, content) {
+    return new Promise((resolve, reject) => {
+        getCredentials().then(userdata => {
+            doAPIRequest('api/edge/comments', {method: 'POST', body: JSON.stringify({
+                data: {
+                    attributes: {
+                        content: content
+                    },
+                    relationships: {
+                        post: {
+                            data: {
+                                id: postId,
+                                type: 'posts'
+                            }
+                        },
+                        user: {
+                            data: {
+                                id: userdata.uid,
+                                type: 'users'
+                            }
+                        }
+                    },
+                    type: 'comments'
+                }
+            })}).then(response => {
+                resolve(response.data.id);
+                return;
+            });
+        });
+    });
+}
+
+/**
+ * Block an user by its ID
+ * @param {Number} userId 
+ */
+function blockUser(userId) {
+    return new Promise((resolve, reject) => {
+        getCredentials().then(userdata => {
+            doAPIRequest('api/edge/blocks', {method: 'POST', body: JSON.stringify({
+                data: {
+                    relationships: {
+                        blocked: {
+                            data: {
+                                id: userId,
+                                type: 'users'
+                            }
+                        },
+                        user: {
+                            data: {
+                                id: userdata.uid,
+                                type: 'users'
+                            }
+                        }
+                    },
+                    type: 'blocks'
+                }
+            })}).then(response => {
+                resolve(response.data.id);
+                return;
+            });
+        });
+    });
+}
+
+/**
+ * Unblock user by its ID
+ * @param {Number} userId 
+ */
+function unblockUser(userId) {
+    return new Promise((resolve, reject) => {
+        getCredentials().then((userdata) => {
+            doAPIRequest('api/edge/blocks?filter%5Buser%5D={0}'.format(userId), {method: 'GET'}).then(result => {
+                if (result.meta.count == 0) resolve(true);
+                else doAPIRequest('api/edge/blocks/{0}'.format(result.data[0].id), {method: 'DELETE'}).then(r => {
+                    if (r.ok) resolve(true); else reject({error: 'fetchf'});
+                });
+            });
+        });
+    });
+}
+
+/**
  * Unlike a comment by its ID
  * @param {Number} commentId ID of the comment
  */

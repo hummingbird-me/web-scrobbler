@@ -66,7 +66,7 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
             },
             pDefault: function(e) {
                 e.preventDefault();
-                console.warn('Report and Block events are not handled for now');
+                console.warn('Report events are not handled for now');
             },
             copyLink: function(e) {
                 e.preventDefault();
@@ -112,6 +112,31 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                     $(target).attr('data-comment-liked', 'true');
                 }
                 $(target).toggleClass('is-liked');
+            },
+            postComment: function(e) {
+                if (e.shiftKey) {
+                    return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                $(e.target).attr('disabled', 'dis');
+                postComment($(e.target).attr('data-post-id'), e.target.value).then(id => {
+                    console.log(id);
+                });
+                console.log(e);
+            },
+            blockUser: function(e) {
+                e.preventDefault();
+                /*if ($(e.target).attr('data-blocked')) {
+                    unblockUser($(e.target).attr('data-user-id'));
+                    $(e.target).removeAttr('data-blocked');
+                    $(e.target).text(chrome.i18n.getMessage('blockUser', [$(e.taget).attr('data-user-name')]));
+                } else {*/
+                blockUser($(e.target).attr('data-user-id'));
+                $(e.target).attr('data-blocked', 'true');
+                //$(e.target).text(chrome.i18n.getMessage('unblockUser', [$(e.taget).attr('data-user-name')]));
+                //}
+                $(e.target).parent().parent().toggleClass('open');
             },
             openPopup: function(e) {
                 e.preventDefault();

@@ -3,8 +3,8 @@
     "name": "__MSG_appName__",
     "description": "__MSG_appDesc__",
     "author": "Kitsu.io",
-    "version": "0.0.9",
-    "version_name": "9th draft",
+    "version": "0.0.10",
+    "version_name": "10th draft",
     "permissions": [
         "*://www.crunchyroll.com/*",
         "*://www.wakanim.tv/*",

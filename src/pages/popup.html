@@ -149,7 +149,7 @@
                                                         <a href="#" v-if="!post.followed" @click="followPost" class="dropdown-item" :data-post-id="post.post.id" :data-followed="post.followed">{{ trans('followPost') }}</a>
                                                         <a href="#" v-else @click="followPost" class="dropdown-item" :data-post-id="post.post.id" :data-followed="post.followed">{{ trans('unfollowPost') }}</a>
                                                         <a href="#" @click="pDefault" class="dropdown-item">{{ trans('reportPost') }}</a>
-                                                        <a href="#" @click="pDefault" class="dropdown-item">{{ trans('blockUser', '@' + post.user.attributes.name) }}</a>
+                                                        <a href="#" @click="blockUser" :data-user-id="post.user.id" :data-user-name="post.user.attributes.name" class="dropdown-item">{{ trans('blockUser', '@' + post.user.attributes.name) }}</a>
                                                     </div>
                                                 </span>
                                             </div>
@@ -207,8 +207,8 @@
                                                                         {{ trans('copyLinkComment') }}
                                                                     </a>
         
-                                                                    <a href="#" class="dropdown-item">{{ trans('reportComment') }}</a>
-                                                                    <a href="#" class="dropdown-item">{{ trans('blockUser', '@' + comment.author.attributes.name) }}</a>
+                                                                    <a href="#" @click="pDefault" class="dropdown-item">{{ trans('reportComment') }}</a>
+                                                                    <a href="#" @click="blockUser" :data-user-id="comment.author.id" :data-user-name="comment.author.attributes.name" class="dropdown-item">{{ trans('blockUser', '@' + comment.author.attributes.name) }}</a>
                                                                 </div>
                                                             </span>
                                                         </div>
@@ -218,7 +218,7 @@
                                         </ul>
         
                                         <div class="add-comment-wrapper">
-                                            <textarea placeholder="Leave a comment..." rows="1" class="form-control add-comment ember-view" style="overflow: hidden; word-wrap: break-word; resize: none; height: 40px; box-sizing: border-box"></textarea>
+                                            <textarea @keyup.enter="postComment" :data-post-id="post.post.id" placeholder="Leave a comment..." rows="1" class="form-control add-comment ember-view" style="overflow: hidden; word-wrap: break-word; resize: none; height: 40px; box-sizing: border-box"></textarea>
                                         </div>
                                     </div>
                                 </div>

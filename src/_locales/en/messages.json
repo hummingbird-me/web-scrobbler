@@ -71,6 +71,9 @@
     "communityPosts": {
         "message": "Community posts"
     },
+    "refreshPosts": {
+        "message": "Refresh"
+    },
     "nsfwWarn": {
         "message": "This post contains NSFW content."
     },
@@ -139,5 +142,14 @@
     },
     "leaveComment": {
         "message": "Leave a comment..."
+    },
+    "blockUserNoticeTitle": {
+        "message": "Block User"
+    },
+    "blockUserNoticeH2": {
+        "message": "Before you block this person, we want to let you know how blocking will work."
+    },
+    "blockUserNotice": {
+        "message": "Blocking this person will make it so that their content is no longer visible to you, and your content will no longer be visible or interactable for them."
     }
 }
