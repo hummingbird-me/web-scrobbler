@@ -52,6 +52,10 @@
         {
             "matches": ["*://www.netflix.com/*"],
             "js": ["node_modules/jquery/dist/jquery.min.js", "global.js", "websites/netflix.js"]
+        },
+        {
+            "matches": ["*://www.hidive.com/*"],
+            "js": ["node_modules/jquery/dist/jquery.min.js", "global.js", "websites/hidive.js"]
         }
     ],
     "icons": {
