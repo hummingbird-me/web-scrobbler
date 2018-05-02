@@ -62,6 +62,7 @@ var vm = new Vue({
                 data.json().then(function (data) {
                     if (data.error) {
                         vm.notice = chrome.i18n.getMessage('loginError');
+                        vm.blockbtn = false;
                     } else {
                         var url = 'https://kitsu.io/api/edge/users?filter[self]=true',
                             options = {
@@ -77,14 +78,14 @@ var vm = new Vue({
                             data2.json().then(function (data2) {
                                 chrome.storage.local.set({'atoken': data.access_token, 'uid': data2.data[0].id}, function() {
                                     vm.notice = chrome.i18n.getMessage('connected');
-                                    vm.blockbtn = true;
-                                    //chrome.runtime.reload();
+                                    chrome.runtime.reload();
                                 });
                             });
                         });
                     }
                 });
             }
+            this.blockbtn = true;
             fetch(url, options).then(handleResponse);
         }
     }
