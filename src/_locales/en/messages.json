@@ -151,5 +151,26 @@
     },
     "blockUserNotice": {
         "message": "Blocking this person will make it so that their content is no longer visible to you, and your content will no longer be visible or interactable for them."
+    },
+    "welcomeLogin": {
+        "message": "Welcome here!"
+    },
+    "loginText": {
+        "message": "Login to your Kitsu account below. If you need an account, $CREATEONE$.",
+        "placeholders": {
+            "createone": {
+                "content": "$1",
+                "example": "create one"
+            }
+        }
+    },
+    "createAccount": {
+        "message": "create one"
+    },
+    "facebookLogin": {
+        "message": "Facebook login not supported"
+    },
+    "forgotPassword": {
+        "message": "forgot password?"
     }
 }

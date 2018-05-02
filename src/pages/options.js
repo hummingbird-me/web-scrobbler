@@ -24,7 +24,8 @@ var vm = new Vue({
         emailtest: false,
         passtest: false,
         blockbtn: false,
-        notice: null
+        notice: null,
+        crAcc: '<a target="_blank" href="https://kitsu.io">' + chrome.i18n.getMessage('createAccount') + '</a>'
     },
     watch: {
         email: function(email) {
@@ -37,8 +38,8 @@ var vm = new Vue({
         }
     },
     methods: {
-        trans: function(id) {
-            return chrome.i18n.getMessage(id);
+        trans: function(id, ...args) {
+            return chrome.i18n.getMessage(id, args);
         },
         submitLogin: function(e) {
             e.preventDefault();

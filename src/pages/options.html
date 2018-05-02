@@ -24,29 +24,11 @@
 </head>
 
 <body>
-    <!--<div class="container">
-        <h2>{{ trans('settings') }}</h2>
-        <h3>{{ trans('loginTitle') }}</h3>
-        <form @submit="submitLogin">
-            <div class="field">
-                <label>{{ trans('email') }}</label>
-                <input type="email" id="login" name="login" required="required" :placeholder="trans('email')">
-            </div>
-            <div class="field">
-                <label>{{ trans('password') }}</label>
-                <input type="password" id="password" name="password" required="required" :placeholder="trans('password')">
-            </div>
-            <input type="submit" :value="trans('login')"></input>
-        </form>
-        <br/>
-        <p id="notice"></p>
-    </div>-->
     <div class="ember-view container">
         <div class="modal-wrapper">
             <div class="auth-section active">
-                <h6 class="auth-section-title">Welcome here!</h6>
-                <p class="auth-section-helper">Login to your Kitsu account below. If you need an account,
-                    <a target="_blank" href="https://kitsu.io">create one</a>.</p>
+                <h6 class="auth-section-title">{{ trans('welcomeLogin') }}</h6>
+                <p class="auth-section-helper" v-html="trans('loginText', crAcc)"></p>
             </div>
 
             <div>
@@ -63,19 +45,19 @@
                         </span>
                         <div class="button-labelSet">
                             <span class="button-label button-label--multiLine">
-                                Facebook login not supported
+                                {{ trans('facebookLogin') }}
                             </span>
                         </div>
                     </button>
                 </div>
-                <small>Or, sign in with:</small>
+                <small>{{ trans('orLogin') }}</small>
                 <form @submit="submitLogin">
                     <div class="form-group email-login">
                         <input :placeholder="trans('email')" v-model="email" name="email" autocomplete="email username" class="form-control username" autofocus="" required="">
 
                         <input :placeholder="trans('password')" v-model="password" name="password" autocomplete="current-password" class="form-control password" required="" type="password">
 
-                        <a target="_blank" href="https://kitsu.io/password-reset" class="forgot-pass-link">forgot password?</a>
+                        <a target="_blank" href="https://kitsu.io/password-reset" class="forgot-pass-link">{{ trans('forgotPassword') }}</a>
                     </div>
 
                     <div class="form-cta">
