@@ -6,7 +6,8 @@ var gulp = require('gulp'),
     crx = require('gulp-crx-pack'),
     clean = require('gulp-clean'),
     eslint = require('gulp-eslint'),
-    moment = require('moment');
+    moment = require('moment'),
+    vfs = require('vinyl-fs');
 
 // clean build folder
 gulp.task('clean', () => {
@@ -39,8 +40,8 @@ gulp.task('copy', () => {
 
 // Init workspace -- loading unpacked without this will make the extension crash
 gulp.task('copy-devel', () => {
-    return gulp.src('node_modules/**')
-        .pipe(gulp.dest('src/node_modules'));
+    return vfs.src('node_modules/'/*, {followSymlinks: false}*/)
+        .pipe(vfs.symlink('src/node_modules'));
 });
 
 // html
