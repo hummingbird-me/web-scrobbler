@@ -2,11 +2,11 @@ module.exports = {
     "env": {
         "webextensions": true,
         "browser": true,
-        "es6": true
+        "es6": true,
+        "jquery": true
     },
     "globals": {
-        "$": true,
-        "jQuery": false,
+        "Kitsu": true,
         "retrieveWindowVariables": false,
         "getCredentials": false,
         "doAPIRequest": false,

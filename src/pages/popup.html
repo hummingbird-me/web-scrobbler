@@ -73,64 +73,64 @@
                         <a href="#" @click="scrobbleNow" v-if="!scrobbling.scrobbled" class="button button--primary">{{ trans('scrobbleNow') }}</a>
                         <p class="synopsis">{{ scrobbling.animeData.attributes.synopsis }}</p>
                         <div class="comments">
-                            <h3 v-if="scrobbling.discussdata.length != 0">{{ trans('communityPosts') }}</h3>
+                            <h3 v-if="scrobbling.discussdata.length != 0">{{ trans('communityPosts') }} | <a @click="refreshFeed" href="#">{{ trans('refreshPosts') }}</a></h3>
                             <div v-for="post in scrobbling.discussdata" class="occludable-area ember-view">
                                 <div class="row stream-item ember-view">
                                     <div class="stream-item-wrapper col-sm-12">
                                         <div class="stream-item--title-block">
                                             <span class="avatar-block">
-                                                <a :href="'https://kitsu.io' + post.user.links.self" target="_blank" class="author-avatar">
+                                                <a :href="'https://kitsu.io' + post.activities[0].actor.links.self" target="_blank" class="author-avatar">
                                                     <div class="lazy-image is-loaded ember-view">
-                                                        <img v-if="post.user.attributes.avatar" :src="post.user.attributes.avatar.medium">
+                                                        <img v-if="post.activities[0].actor.avatar" :src="post.activities[0].actor.avatar.medium">
                                                     </div>
                                                 </a>
                                             </span>
         
                                             <div class="author-info">
-                                                <a :href="'https://kitsu.io' + post.user.links.self" target="_blank" class="author-name">
-                                                    {{ post.user.attributes.name }}
+                                                <a :href="'https://kitsu.io' + post.activities[0].actor.links.self" target="_blank" class="author-name">
+                                                    {{ post.activities[0].actor.name }}
                                                 </a>
-                                                <a :href="'https://kitsu.io' + post.post.links.self" target="_blank">
+                                                <a :href="'https://kitsu.io' + post.activities[0].subject.links.self" target="_blank">
                                                     <small class="secondary-text">
-                                                        {{ mjsnow(post.post.attributes.createdAt) }}
+                                                        {{ mjsnow(post.activities[0].subject.createdAt) }}
                                                     </small>
                                                 </a>
                                             </div>
                                         </div>
                                         <span>
-                                            <div class="stream-content" v-if="!post.post.attributes.nsfw && !post.post.attributes.spoiler">
-                                                <div class="stream-content-post" v-html="post.post.attributes.contentFormatted"></div>
+                                            <div class="stream-content" v-if="!post.activities[0].subject.nsfw && !post.activities[0].subject.spoiler">
+                                                <div class="stream-content-post" v-html="post.activities[0].subject.contentFormatted"></div>
                                             </div>
-                                            <div class="stream-content" v-else-if="post.post.attributes.nsfw && !post.post.attributes.spoiler">
+                                            <div class="stream-content" v-else-if="post.activities[0].subject.nsfw && !post.activities[0].subject.spoiler">
                                                 <div class="nsfw-gate">
                                                     <a class="showlink" @click="showComment">
                                                         <div class="gate--label">{{ trans('nsfwWarn') }}</div>
                                                         <div class="gate--hover">{{ trans('nsfwConfirm') }}</div>
                                                     </a>
                                                 </div>
-                                                <div class="stream-content-post end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
+                                                <div class="stream-content-post end" v-show="post.show" v-html="post.activities[0].subject.contentFormatted"></div>
                                             </div>
-                                            <div class="stream-content" v-else-if="!post.post.attributes.nsfw && post.post.attributes.spoiler">
+                                            <div class="stream-content" v-else-if="!post.activities[0].subject.nsfw && post.activities[0].subject.spoiler">
                                                 <div class="spoiler-gate">
                                                     <a class="showlink" @click="showComment">
                                                         <div class="gate--label">{{ trans('spoilerWarn') }}</div>
                                                         <div class="gate--hover">{{ trans('spoilerConfirm') }}</div>
                                                     </a>
                                                 </div>
-                                                <div class="stream-content-post end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
+                                                <div class="stream-content-post end" v-show="post.show" v-html="post.activities[0].subject.contentFormatted"></div>
                                             </div>
-                                            <div class="stream-content" v-else-if="post.post.attributes.nsfw && post.post.attributes.spoiler">
+                                            <div class="stream-content" v-else-if="post.activities[0].subject.nsfw && post.activities[0].subject.spoiler">
                                                 <div class="combo-gate">
                                                     <a class="showlink" @click="showComment">
                                                         <div class="gate--label">{{ trans('comboWarn') }}</div>
                                                         <div class="gate--hover">{{ trans('comboConfirm') }}</div>
                                                     </a>
                                                 </div>
-                                                <div class="stream-content-post end" v-show="post.show" v-html="post.post.attributes.contentFormatted"></div>
+                                                <div class="stream-content-post end" v-show="post.show" v-html="post.activities[0].subject.contentFormatted"></div>
                                             </div>
                                             <div class="stream-item-activity">
                                                 <div id="ember1451" class="d-inline ember-view">
-                                                    <a @click="likePost" :data-post-liked="post.liked" :data-post-id="post.post.id" href="#" class="like-stream-item" v-bind:class="{ 'is-liked': post.liked }">
+                                                    <a @click="likePost" :data-post-liked="post.activities[0].liked.meta.count == 1" :data-post-id="post.activities[0].subject.id" href="#" class="like-stream-item" v-bind:class="{ 'is-liked': post.activities[0].liked.meta.count }">
                                                         <span class="heart-wrapper"></span>
                                                     </a>
                                                 </div>
@@ -145,42 +145,42 @@
                                                         </svg>
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-right">
-                                                        <a href="#" @click="copyLink" class="dropdown-item copylink" :data-clipboard-text="'https://kitsu.io' + post.post.links.self">{{ trans('copyLink') }}</a>
-                                                        <a href="#" v-if="!post.followed" @click="followPost" class="dropdown-item" :data-post-id="post.post.id" :data-followed="post.followed">{{ trans('followPost') }}</a>
-                                                        <a href="#" v-else @click="followPost" class="dropdown-item" :data-post-id="post.post.id" :data-followed="post.followed">{{ trans('unfollowPost') }}</a>
+                                                        <a href="#" @click="copyLink" class="dropdown-item copylink" :data-clipboard-text="'https://kitsu.io' + post.activities[0].subject.links.self">{{ trans('copyLink') }}</a>
+                                                        <a href="#" v-if="post.activities[0].followed.meta.count == 1" @click="followPost" class="dropdown-item" :data-post-id="post.activities[0].subject.id" :data-followed="post.followed">{{ trans('followPost') }}</a>
+                                                        <a href="#" v-else @click="followPost" class="dropdown-item" :data-post-id="post.activities[0].subject.id" :data-followed="post.followed">{{ trans('unfollowPost') }}</a>
                                                         <a href="#" @click="pDefault" class="dropdown-item">{{ trans('reportPost') }}</a>
-                                                        <a href="#" @click="blockUser" :data-user-id="post.user.id" :data-user-name="post.user.attributes.name" class="dropdown-item">{{ trans('blockUser', '@' + post.user.attributes.name) }}</a>
+                                                        <a href="#" @click="blockUser" :data-user-id="post.activities[0].actor.id" :data-user-name="post.activities[0].actor.name" class="dropdown-item">{{ trans('blockUser', '@' + post.activities[0].actor.name) }}</a>
                                                     </div>
                                                 </span>
                                             </div>
                                         </span>
                                     </div>
-                                    <div class="stream-item-comments ember-view end" v-show="(!post.post.attributes.nsfw || !post.post.attributes.spoiler)">
+                                    <div class="stream-item-comments ember-view end" v-show="(!post.activities[0].subject.nsfw || !post.activities[0].subject.spoiler)">
         
                                         <ul class="media-list">
-                                            <li v-for="comment in post.comments" class="media new-comment ember-view">
+                                            <li v-for="comment in post.activities[0].comments.data" v-if="comment.user" class="media new-comment ember-view">
                                                 <div class="media-left">
-                                                    <a :href="'https://kitsu.io' + comment.author.links.self">
+                                                    <a :href="'https://kitsu.io' + comment.user.links.self" target="_blank">
                                                         <div class="media-object lazy-image is-loaded ember-view">
-                                                            <img v-if="comment.author.attributes.avatar" :src="comment.author.attributes.avatar.tiny">
+                                                            <img v-if="comment.user.avatar" :src="comment.user.avatar.tiny">
                                                         </div>
                                                     </a>
                                                 </div>
                                                 <div class="media-body">
                                                     <h4 class="media-heading">
-                                                        <a :href="'https://kitsu.io' + comment.author.links.self">
-                                                            {{ comment.author.attributes.name }}
+                                                        <a :href="'https://kitsu.io' + comment.user.links.self" target="_blank">
+                                                            {{ comment.user.name }}
                                                         </a>
                                                     </h4>
         
-                                                    <span v-html="comment.attributes.contentFormatted" class="comment-body"></span>
+                                                    <span v-html="comment.contentFormatted" class="comment-body"></span>
         
                                                     <div class="stream-item-activity">
                                                         <div class="d-inline ember-view">
                                                             <a href="#" @click="likeComment" :data-comment-id="comment.id" :data-comment-liked="comment.liked" class="like-stream-item" v-bind:class="{ 'is-liked': comment.liked }">
                                                                 <span class="heart-wrapper"></span>
                                                             </a>
-                                                            <span class="sm-comment-count">{{ comment.attributes.likesCount }}</span>
+                                                            <span class="sm-comment-count">{{ comment.likesCount }}</span>
                                                         </div>
         
                                                         <span class="seperator"> · </span>
@@ -190,7 +190,7 @@
         
                                                         <a :href="'https://kitsu.io' + comment.links.self" target="_blank">
                                                             <small class="comment-time">
-                                                                {{ mjsnow(comment.attributes.updatedAt) }}
+                                                                {{ mjsnow(comment.updatedAt) }}
                                                             </small>
                                                         </a>
         
@@ -208,7 +208,7 @@
                                                                     </a>
         
                                                                     <a href="#" @click="pDefault" class="dropdown-item">{{ trans('reportComment') }}</a>
-                                                                    <a href="#" @click="blockUser" :data-user-id="comment.author.id" :data-user-name="comment.author.attributes.name" class="dropdown-item">{{ trans('blockUser', '@' + comment.author.attributes.name) }}</a>
+                                                                    <a href="#" @click="blockUser" :data-user-id="comment.user.id" :data-user-name="comment.user.name" class="dropdown-item">{{ trans('blockUser', '@' + comment.user.name) }}</a>
                                                                 </div>
                                                             </span>
                                                         </div>
@@ -218,7 +218,7 @@
                                         </ul>
         
                                         <div class="add-comment-wrapper">
-                                            <textarea @keyup.enter="postComment" :data-post-id="post.post.id" placeholder="Leave a comment..." rows="1" class="form-control add-comment ember-view" style="overflow: hidden; word-wrap: break-word; resize: none; height: 40px; box-sizing: border-box"></textarea>
+                                            <textarea @keyup.enter="postComment" :data-post-id="post.activities[0].subject.id" placeholder="Leave a comment..." rows="1" class="form-control add-comment ember-view" style="overflow: hidden; word-wrap: break-word; resize: none; height: 40px; box-sizing: border-box"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -245,6 +245,7 @@
     <script src="../node_modules/moment/moment.js"></script>
     <script src="../node_modules/vue/dist/vue.js"></script>
     <script src="../node_modules/clipboard/dist/clipboard.min.js"></script>
+    <script src="../kitsu.js"></script>
     <script src="../global.js"></script>
     <script src="popup.js"></script>
 </body>

@@ -44,7 +44,7 @@ getCredentials().then(function(result) {
             });
     
             scrobbling.error = 'exptoken';
-        } 
+        }
     });
 }).catch(function(reason) {
     console.warn('No account', reason);
@@ -173,7 +173,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             getFeed(scrobbling.animeData.id, scrobbling.episode).then(function(data) {
                 scrobbling.discussdata = data;
                 sendResponse(true);
-            }); 
+            });
         });
     } else if (message.action == 'getScrobbling') {
         sendResponse(scrobbling);
@@ -181,6 +181,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         scrobbleAnime(scrobbling.animeData.id, scrobbling.episode);
         scrobbling.notice = chrome.i18n.getMessage('scrobbled');
         sendResponse(true);
+    } else if (message.action == 'refreshFeed') {
+        getFeed(scrobbling.animeData.id, scrobbling.episode).then(function(data) {
+            scrobbling.discussdata = data;
+            sendResponse(true);
+        });
     } else {
         console.error('Unknown runtime message', message);
         sendResponse(false);

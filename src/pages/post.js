@@ -18,7 +18,7 @@
     --> for debugging Vue in the console */
 var vm;
 chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
-    if (!scrobbling.error) {
+    if (scrobbling.error !== 'none') {
         $('body').text(chrome.i18n.getMessage('nothing'));
         return;
     }
@@ -38,7 +38,15 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                     data: {
                         scrobbling: scrobbling,
                         userdata: userdata,
-                        profile: jsondata.data[0]
+                        profile: jsondata.data[0],
+                        postcheck: false,
+                        postcontent: null
+                    },
+                    watch: {
+                        postcontent: function(newc) {
+                            if (newc.length >= 1) this.postcheck = true;
+                            else this.postcheck = false;
+                        }
                     },
                     methods: {
                         trans: function(str) {

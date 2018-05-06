@@ -38,10 +38,10 @@
             </div>
 
             <div class="add-content-expanded">
-                <textarea maxlength="9000" class="stream-content-editor ember-view" style="overflow-x: hidden; word-wrap: break-word; resize: none; height: 100px;"></textarea>
+                <textarea v-model="postcontent" maxlength="9000" class="stream-content-editor ember-view" style="overflow-x: hidden; word-wrap: break-word; resize: none; height: 100px;"></textarea>
 
                 <div class="add-content-footer">
-                    <button type="button" class="button button--primary" disabled="">
+                    <button @click="post" type="button" class="button button--primary" :disabled="!postcheck">
                         {{ trans('post') }}
                     </button>
                     <label class="custom-control custom-checkbox">

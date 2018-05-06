@@ -34,14 +34,21 @@ gulp.task('copy', () => {
     './node_modules/jquery/**/*',
     './node_modules/moment/**/*',
     './node_modules/semantic-ui-progress/**/*',
-    './node_modules/font-awesome/**/*'], {base: './'})
-    .pipe(gulp.dest('./build/'));
+    './node_modules/font-awesome/**/*',
+    './node_modules/kitsu/**/*'], {base: './'})
+        .pipe(gulp.dest('./build/'));
 });
 
 // Init workspace -- loading unpacked without this will make the extension crash
 gulp.task('copy-devel', () => {
-    return vfs.src('node_modules/'/*, {followSymlinks: false}*/)
-        .pipe(vfs.symlink('src/node_modules'));
+    return gulp.src(['./node_modules/vue/**/*',
+    './node_modules/clipboard/**/*',
+    './node_modules/jquery/**/*',
+    './node_modules/moment/**/*',
+    './node_modules/semantic-ui-progress/**/*',
+    './node_modules/font-awesome/**/*',
+    './node_modules/kitsu/**/*'], {base: './'})
+        .pipe(gulp.dest('./src/'));
 });
 
 // html

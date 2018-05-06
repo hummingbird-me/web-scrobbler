@@ -19,6 +19,35 @@ Global helpers file
 /*eslint no-unused-vars: "off"*/
 /*global scrobbling, mainTimer*/
 
+var dummyuser = {
+    id: '00000',
+    attributes: {
+        avatar: {
+            large: null,
+            medium: null,
+            original: null,
+            small: null,
+            tiny: null,
+            meta: {
+                
+            }
+        },
+        name: null,
+        slug: null
+    },
+    links: {
+        self: null
+    }
+};
+
+var kitsuAPI;
+
+getCredentials().then(userdata => {
+    kitsuAPI = new Kitsu({headers: {
+        Authorization: 'Bearer {0}'.format(userdata.atoken)
+    }});
+});
+
 /**
  * Retrieve actual window variables
  * @param {Array} variables Set of variables to retrieve
@@ -83,6 +112,7 @@ function getCredentials() {
 
 /**
  * Do an API request to kitsu.io
+ * @deprecated use kitsuAPI now
  * @param {string} endpoint api endpoint
  * @param {Request} options fetch options, auth is by default added
  * @returns {Promise} JSON or response
@@ -321,29 +351,17 @@ function postComment(postId, content) {
 function blockUser(userId) {
     return new Promise((resolve, reject) => {
         getCredentials().then(userdata => {
-            doAPIRequest('api/edge/blocks', {method: 'POST', body: JSON.stringify({
-                data: {
-                    relationships: {
-                        blocked: {
-                            data: {
-                                id: userId,
-                                type: 'users'
-                            }
-                        },
-                        user: {
-                            data: {
-                                id: userdata.uid,
-                                type: 'users'
-                            }
-                        }
-                    },
-                    type: 'blocks'
+            kitsuAPI.post('blocks', {
+                blocked: {
+                    id: userId,
+                    type: 'users'
+                },
+                user: {
+                    id: userdata.uid,
+                    type: 'users'
                 }
-            })}).then(response => {
-                resolve(response.data.id);
-                return;
             });
-        });
+        }).then(r => {resolve(r.id)});
     });
 }
 
@@ -390,7 +408,7 @@ function unlikeComment(commentId) {
 function postFeed(animeId, episode, content) {
     return new Promise((resolve, reject) => {
         getCredentials().then(userdata => {
-            doAPIRequest('api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D={0}&page%5Boffset%5D={1}&page%5Blimit%5D=1'.format(animeId, (parseInt(episode) - 1)), {method: 'POST'}).then(jsondata => {
+            doAPIRequest('api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D={0}&page%5Boffset%5D={1}&page%5Blimit%5D=1'.format(animeId, (parseInt(episode) - 1)), {method: 'GET'}).then(jsondata => {
                 if (jsondata.data.length === 0) {
                     reject({error: 'noepfeed'});
                 } else {
@@ -516,7 +534,7 @@ function parseFeedResult(jsondata) {
         var postsIds = [];
         if (jsondata.data.length === 0) resolve([]);
         getCredentials().then(userdata => {
-            var comments = [];
+            /*var comments = [];
             var posts = [];
             for (var i = 0; i < jsondata.data.length; i++) {
                 jsondata.data[i].activity = jsondata.included.find(element => {
@@ -558,6 +576,7 @@ function parseFeedResult(jsondata) {
                         if (result.meta.count == 1) tmp1.followed = true;
                         if (result.meta.count != 1) tmp1.followed = false;
                     });
+                    console.log({iteration: i, type: 'post', data: tmp1});
                     posts.push(tmp1);
                     tmp2.post = jsondata.included.find(element => {
                         return (element.id == tmp2.activity.relationships.target.data.id);
@@ -575,21 +594,65 @@ function parseFeedResult(jsondata) {
                     console.log({iteration: i, type: 'comment', data: tmp2});
                     comments.push(tmp2);
                 }
-            }
-            for (i = 0; i < comments.length; i++) {
-                for (var ii = 0; ii < posts.length; ii++) {
-                    console.log({post: posts[ii], comment: comments[i], iteration: i, iteration2: ii});
-                    if (comments[i].post.id == posts[ii].post.id) {
-                        console.log('match !');
-                        // avoid Converting circular structure to JSON
-                        var comment = comments[i].comment;
-                        console.log(comment);
-                        posts[ii].comments.push(comment);
+                if (i == (jsondata.data.length - 1)) {
+                    for (var iii = 0; iii < posts.length; iii++) {
+                        doAPIRequest('api/edge/comments?filter%5BpostId%5D={0}&include=user%2Cparent%2Clikes%2Creplies'.format(posts[iii].post.id), {method: 'GET'}).then(commentsdata => {
+                            console.log({comments: commentsdata, iteration: iii});
+                            for (var ii = 0; ii < commentsdata.data.length; ii++) {
+                                console.log({comment: commentsdata.data[ii], post: posts[iii], iteration: iii, iteration2: ii});
+                                if (!commentsdata.data[iii].relationships.parent.data) {
+                                    console.log('hey !');
+                                    // This weird condition is here because of https://kitsu.io/comments/28845489
+                                    if (commentsdata.data[ii].relationships.user.data === null) {
+                                        commentsdata.data[ii].author = dummyuser;
+                                    } else {
+                                        commentsdata.data[ii].author = commentsdata.included.find(element => {
+                                            return (element.id == commentsdata.data[ii].relationships.user.data.id);
+                                        });
+                                    }
+                                    posts[iii].comments.push(commentsdata.data[ii]);
+                                }
+                            }
+                        });
                     }
                 }
             }
-            console.log({comments: comments, posts: posts});
-            resolve(posts);
+            */
+            var arr = jsondata.data;
+            var newarr = [];
+            arr.forEach(async (item, index) => {
+                if (!item.activities[0].target) var postId = item.activities[0].subject.id
+                else var postId = item.activities[0].target.id;
+                item.activities[0].comments = await kitsuAPI.get('comments', {
+                    filter: {
+                        postId
+                    },
+                    include: 'user,parent,likes,replies'
+                });
+                item.activities[0].liked = await kitsuAPI.get('post-likes', {
+                    filter: {
+                        userId: userdata.uid,
+                        postId
+                    }
+                });
+                item.activities[0].likes = await kitsuAPI.get('post-likes', {
+                    filter: {
+                        postId
+                    },
+                    include: 'user'
+                });
+                item.activities[0].followed = await kitsuAPI.get('post-follows', {
+                    filter: {
+                        userId: userdata.uid,
+                        postId
+                    }
+                });
+                newarr.push(item);
+                console.log(newarr);
+                if (index == (jsondata.data.length - 1)) {
+                    resolve(newarr);
+                }
+            }, this);
         });
     });
 }
@@ -601,14 +664,30 @@ function parseFeedResult(jsondata) {
  */
 function getFeed(animeId, episode) {
     return new Promise(resolve => {
-        doAPIRequest('api/edge/episodes?filter%5BmediaType%5D=Anime&filter%5BmediaId%5D={0}&page%5Boffset%5D={1}&page%5Blimit%5D=1'.format(animeId, (parseInt(episode)) - 1), {method: 'GET'}).then(jsondata => {
+        kitsuAPI.get('episodes', {
+            filter: {
+                mediaType: 'Anime',
+                mediaId: animeId
+            },
+            page: {
+                offset: parseInt(episode) - 1,
+                limit: 1
+            }
+        }).then(jsondata => {
             if (jsondata.data.length == 0) {
                 resolve([]);
             } else {
                 var episodeId = jsondata.data[0].id;
-                doAPIRequest('api/edge/feeds/episode_aggr/{0}?filter%5Bkind%5D=posts&include=media%2Cactor%2Cunit%2Csubject%2Ctarget%2Ctarget.user%2Ctarget.target_user%2Ctarget.spoiled_unit%2Ctarget.media%2Ctarget.target_group%2Csubject.user%2Csubject.target_user%2Csubject.spoiled_unit%2Csubject.media%2Csubject.target_group%2Csubject.followed%2Csubject.library_entry%2Csubject.anime%2Csubject.manga&page%5Blimit%5D=100'.format(episodeId), {
-                    method: 'GET'
+                kitsuAPI.get('feeds/episode_aggr/{0}'.format(episodeId), {
+                    filter: {
+                        kind: 'posts'
+                    },
+                    include: 'media,actor,unit,subject,target,target.user,target.target_user,target.spoiled_unit,target.media,target.target_group,subject.user,subject.target_user,subject.spoiled_unit,subject.media,subject.target_group,subject.followed,subject.library_entry,subject.anime,subject.manga',
+                    page: {
+                        limit: 100
+                    }
                 }).then(data => {
+                    console.log(data);
                     parseFeedResult(data).then(finaldata => {
                         resolve(finaldata);
                     });

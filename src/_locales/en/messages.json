@@ -60,7 +60,7 @@
         "message": "Anime you are watching cannot be found on Kitsu. You must add it by yourself."
     },
     "unsure": {
-        "message": "Not the good one ?"
+        "message": "Incorrect show ?"
     },
     "unsure_message": {
         "message": "Please choose the good one in the list, if it's not here, check on Kitsu.io and submit a DB Request."

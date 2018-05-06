@@ -138,6 +138,10 @@ chrome.runtime.sendMessage({action: 'getScrobbling'}, scrobbling => {
                 //}
                 $(e.target).parent().parent().toggleClass('open');
             },
+            refreshFeed: function(e) {
+                e.preventDefault();
+                chrome.runtime.sendMessage({action: 'refreshFeed'});
+            },
             openPopup: function(e) {
                 e.preventDefault();
                 window.open(chrome.runtime.getURL('pages/popup.html?popup=1'),'das','location=no,links=no,scrollbars=no,toolbar=no');
